@@ -85,3 +85,17 @@
         update: yes
         dest: /home/pi/green-pi/
         version: master
+
+    # Build container
+    - name: Build Docker Container
+      docker_image:
+        name: green-pi
+        path: /home/pi/green-pi/
+
+    # Start container
+    - name: Start Green Pi container
+      docker_container:
+        image: green-pi:latest
+        name: green-pi
+        state: started
+

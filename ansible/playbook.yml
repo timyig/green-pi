@@ -12,17 +12,17 @@
     - name: test connection
       ping:
 
-# Install Prerequisites
+    # Install Prerequisites
     - name: Install Prerequisites
       apt: name=aptitude update_cache=yes state=latest force_apt_get=yes
 
-#Remove unused packages
+    # Remove unused packages
     - name: Remove unused packages
       apt:
-        name: "{{remove_packages}}"
+        name: "{{ remove_packages }}"
         state: absent
 
-# Install packages
+    # Install packages
     - name: Update apt
       apt: update_cache=yes
 
@@ -31,8 +31,7 @@
         name: "{{ sys_packages }}"
         state: latest
 
-# Install Docker
-
+    # Install Docker
     - name: Add Docker GPG apt Key
       apt_key:
         url: https://download.docker.com/linux/raspbian/gpg
@@ -45,7 +44,7 @@
 
     - name: Update apt and install docker-ce
       apt:
-        name: docker-ce 
+        name: docker-ce
         state: latest
 
     - name: adding user pi to docker group
@@ -56,7 +55,7 @@
 
     - name: Install docker compose
       pip:
-        name: 
+        name:
           - docker-compose
         state: latest
         executable: /usr/bin/pip3

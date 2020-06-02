@@ -65,3 +65,23 @@
         name: docker
         state: started
         enabled: true
+
+    # Clone repository
+    - name: Clone Relay Repository
+      git:
+        repo: 'https://github.com/t-xigit/pyt-8-Way-Relay-Board.git'
+        clone: yes
+        force: yes
+        update: yes
+        dest: /home/pi/pyt-8-Way-Relay-Board/
+        version: master
+
+    # Clone repository
+    - name: Clone GreenPi Repository
+      git:
+        repo: 'https://github.com/t-xigit/green-pi.git'
+        clone: yes
+        force: yes
+        update: yes
+        dest: /home/pi/green-pi/
+        version: master

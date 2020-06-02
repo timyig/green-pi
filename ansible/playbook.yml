@@ -1,0 +1,68 @@
+#################################################
+# Set-up Raspberry Pi
+#################################################
+---
+- hosts: new-pi
+  become: true
+  remote_user: pi
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  vars_files: vars/default.yml
+  tasks:
+    - name: test connection
+      ping:
+
+# Install Prerequisites
+    - name: Install Prerequisites
+      apt: name=aptitude update_cache=yes state=latest force_apt_get=yes
+
+#Remove unused packages
+    - name: Remove unused packages
+      apt:
+        name: "{{remove_packages}}"
+        state: absent
+
+# Install packages
+    - name: Update apt
+      apt: update_cache=yes
+
+    - name: Install Packages
+      apt:
+        name: "{{ sys_packages }}"
+        state: latest
+
+# Install Docker
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/raspbian/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/raspbian stretch stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt:
+        name: docker-ce 
+        state: latest
+
+    - name: adding user pi to docker group
+      user:
+        name: pi
+        groups: docker
+        append: yes
+
+    - name: Install docker compose
+      pip:
+        name: 
+          - docker-compose
+        state: latest
+        executable: /usr/bin/pip3
+
+    - name: Ensure Docker is started.
+      service:
+        name: docker
+        state: started
+        enabled: true

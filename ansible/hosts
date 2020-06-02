@@ -1,0 +1,6 @@
+---
+#Host file
+all:
+    hosts:
+      new-pi:
+        ansible_host: raspberrypi

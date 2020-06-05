@@ -6,10 +6,9 @@ jobs:
   build:    
     runs-on: ubuntu-18.04    
     env:      
-      DOCKER_REGISTRY: docker.pkg.github.com
-      DOCKER_IMAGE: t-xigit/green-pi/green-supervisor
-      DOCKER_USERNAME: ${{ github.actor }}
-      DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}  
+      DOCKER_IMAGE: tigit/green-pi/green-supervisor
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}      
       DOCKER_TARGET_PLATFORM: linux/arm/v7                 
     steps:    
     - name: Checkout the code       
@@ -35,12 +34,12 @@ jobs:
       id: prepare      
       run: |        
         echo ::set-output name=docker_platform::${DOCKER_TARGET_PLATFORM}        
-        echo ::set-output name=docker_image::${DOCKER_REGISTRY}/${DOCKER_IMAGE}        
+        echo ::set-output name=docker_image::${DOCKER_IMAGE}        
         echo ::set-output name=version::${{ steps.extract_branch.outputs.branch }}
     - name: Docker Login      
       if: success()      
       run: |        
-        echo "${DOCKER_PASSWORD}" | docker login ${DOCKER_REGISTRY} --username "${DOCKER_USERNAME}" --password-stdin          
+        echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin          
     - name: Run Buildx (push image)      
       if: success()      
       run: docker buildx build --cache-from "type=local,src=/tmp/.buildx-cache" --cache-to "type=local,dest=/tmp/.buildx-cache" --platform ${{ steps.prepare.outputs.docker_platform }} --output "type=image,push=true" --tag ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} --file ./Dockerfile ./

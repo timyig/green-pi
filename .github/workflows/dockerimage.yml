@@ -35,9 +35,5 @@ jobs:
         echo "${DOCKER_PASSWORD}" | docker login ${DOCKER_REGISTRY} --username "${DOCKER_USERNAME}" --password-stdin          
     - name: Run Buildx (push image)      
       if: success()      
-      run: |        
-        docker buildx build \
-          --platform ${{ steps.prepare.outputs.docker_platform }} \ 
-          --output "type=image,push=true" \
-          --tag ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} ./
+      run: docker buildx build --platform ${{ steps.prepare.outputs.docker_platform }} --output "type=image,push=true" --tag ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} --file ./Dockerfile ./
 

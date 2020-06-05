@@ -39,5 +39,5 @@ jobs:
         docker buildx build \
           --platform ${{ steps.prepare.outputs.docker_platform }} \ 
           --output "type=image,push=true" \
-          --tag ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} \
-          --file ./Dockerfile ./
+          --tag ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} ./
+

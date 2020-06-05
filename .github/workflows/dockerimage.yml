@@ -8,7 +8,7 @@ jobs:
     env:      
       DOCKER_REGISTRY: docker.pkg.github.com
       DOCKER_IMAGE: t-xigit/green-pi/green-supervisor
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_USERNAME: ${{ github.actor }}
       DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}  
       DOCKER_TARGET_PLATFORM: linux/arm/v7                 
     steps:    

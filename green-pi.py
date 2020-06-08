@@ -3,7 +3,7 @@
 Module Docstring
 """
 
-import serial
+import schedule
 import time
 import logging
 import click
@@ -12,7 +12,12 @@ __author__ = "Timur Yigit"
 __version__ = "0.1.0"
 __license__ = "MIT"
 
-""" Data Frame """
-""" BYTE 0  - BYTE 1        - BYTE 2 - BYTE 3 """
-""" Command - Board address - Data   - Check sum XOR BYTE 1 BYTE 2 BYTE 3 """
-print("Hellooooooo")
+def job():
+    print("I'm working...")
+
+schedule.every(1).minutes.do(job)
+
+while True:
+    print("ah faaa")
+    schedule.run_pending()
+    time.sleep(1)

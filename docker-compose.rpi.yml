@@ -13,7 +13,7 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
   green-pi:
-    image: tigit/green-pi
+    image: tigit/green-pi:master
     environment:
       GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
   db:

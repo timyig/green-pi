@@ -1,10 +1,11 @@
 # GREEN-PI DOCKER CONTAINER
+---
 version: '3'
 
 services:
   grafana:
     image: grafana/grafana
-    ports: 
+    ports:
       - 3000:3000
     networks:
       - web

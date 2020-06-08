@@ -98,4 +98,3 @@
         image: green-pi:latest
         name: green-pi
         state: started
-

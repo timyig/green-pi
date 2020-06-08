@@ -3,7 +3,7 @@ version: '3'
 
 services:
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana-arm32v7-linux
     ports: 
       - 3000:3000
     networks:
@@ -12,12 +12,12 @@ services:
       - db
     volumes:
       - grafana_data:/var/lib/grafana
-  # green-pi:
-  #   build: .
-  #   environment:
-  #     GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
+  green-pi:
+    image: tigit/green-pi
+    environment:
+      GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
   db:
-    image: postgres:10
+    image: arm32v7/postgres:10
     restart: always
     environment:
       POSTGRES_PASSWORD: "green-pi"

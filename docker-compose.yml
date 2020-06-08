@@ -16,7 +16,7 @@ services:
   # green-pi:
   #   build: .
   #   environment:
-  #     GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
+  #   GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
   db:
     image: postgres:10
     restart: always

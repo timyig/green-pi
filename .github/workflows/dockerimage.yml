@@ -6,7 +6,7 @@ jobs:
   build:    
     runs-on: ubuntu-18.04    
     env:      
-      DOCKER_IMAGE: tigit/green-pi/green-supervisor
+      DOCKER_IMAGE: tigit/green-pi
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}      
       DOCKER_TARGET_PLATFORM: linux/arm/v7                 

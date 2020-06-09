@@ -5,9 +5,11 @@ Module Docstring
 
 import schedule
 import time
+from time import strftime
 import logging
 import click
-
+import Adafruit_DHT as dht
+import RPi.GPIO as GPIO
 import random
 
 from db import add_sensor_data
@@ -22,7 +24,71 @@ def job():
         'humidity': round(random.uniform(1.0, 100.0), 2), 
         'moister': round(random.uniform(1.0, 100.0), 2)})
 
-schedule.every(1).minutes.do(job)
+def getGrowData():
+
+    GPIO = fetchSensorGPIO()
+
+    data = {}
+    data['timestamp'] = strftime("%Y-%m-%d %H:%M:%S")
+    data['temperature'] = fetchRawTemperature(GPIO['2'])
+    '''
+    data['humidity'] = fetchRawHumidity(GPIO['climate_GPIO'])
+    data['light_status'] = getGPIOState(GPIO['light_GPIO'])
+    data['moisture_status'] = getGPIOState(GPIO['moisture_GPIO'])
+    data['fan_status'] = getGPIOState(GPIO['fan_GPIO'])
+    data['pump_status'] = getGPIOState(GPIO['pump_GPIO'])
+    '''
+    print(data)
+    return data
+
+def growDataUpdate(data):
+    print("Update DB")
+    
+
+# Fetch Raw Temperature
+def fetchRawTemperature(gpioPIN):
+    try:
+        humidity,temperature = dht.read_retry(dht.DHT22, int(gpioPIN))
+
+        if temperature is not None:
+            data_output = round(temperature, 2)
+            print(data_output)
+            return data_output
+        else:
+            print('Failed to get reading. Try again!')
+    except:
+        print("Sensor Error!")
+
+# Fetch Humidity
+def fetchHumidity(gpioPIN):
+    try:
+        humidity,temperature = dht.read_retry(dht.DHT22, int(gpioPIN))
+
+        if humidity is not None and humidity <= 100:
+            data_output = str(round(humidity, 2)) + "%"
+            print(data_output)
+            return data_output
+        else:
+            print('Failed to get reading. Try again!')
+    except:
+        print("Sensor Error!")
+
+# Fetch Raw Humidity
+def fetchRawHumidity(gpioPIN):
+    try:
+        humidity,temperature = dht.read_retry(dht.DHT22, int(gpioPIN))
+
+        if humidity is not None and humidity <= 100:
+            data_output = round(humidity, 2)
+            print(data_output)
+            return data_output
+        else:
+            print('Failed to get reading. Try again!')
+    except:
+        print("Sensor Error!")
+
+
+schedule.every(1).minutes.do(getGrowData)
 
 while True:
     print("ah faaa")

@@ -71,9 +71,9 @@ def fetchRawTemperature(gpioPIN):
             print(data_output)
             return data_output
         else:
-            print('Failed to get reading. Try again!')
+            logging.warning('Failed to get reading. Try again!')
     except:
-        print("Sensor Error!")
+        logging.error("Sensor Error!")
 
 # Fetch Raw Humidity
 def fetchRawHumidity(gpioPIN):
@@ -89,19 +89,18 @@ def fetchRawHumidity(gpioPIN):
     except:
         print("Sensor Error!")
 
-
+'''
 def setLight():
     GPIO = fetchSensorGPIO()
     print(GPIO)
     print(GPIO['climate_GPIO'])
     os.system("python " + "/pyt-8-Way-Relay-Board/k8_box.py" + " set-relay -r " + str(2) + " -s 1")
-
+'''
 
 schedule.every(1).minutes.do(getGrowData)
-schedule.every(10).seconds.do(setLight)
+#schedule.every(10).seconds.do(setLight)
 
 
 while True:
-    print("ah faaa")
     schedule.run_pending()
     time.sleep(1)

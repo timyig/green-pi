@@ -3,6 +3,8 @@
 Module Docstring
 """
 
+import os
+import logging
 import schedule
 import time
 from time import strftime
@@ -15,6 +17,9 @@ __author__ = "Timur Yigit"
 __version__ = "0.1.0"
 __license__ = "MIT"
 
+logging.basicConfig(level=logging.DEBUG)
+relay_script_path = os.environ.get("/pyt-8-Way-Relay-Board/k8_box.py")
+
 '''
 def job():
     add_sensor_data({
@@ -26,6 +31,7 @@ def job():
 # Get list all sensor GPIO pins stored in DB
 def fetchSensorGPIO():
 
+    logging.info("fetchSensorGPIO")
     # Format GPIO data for export
     data = {}
     data['climate_GPIO'] = 2
@@ -41,10 +47,7 @@ def getGrowData():
     data['temperature'] = fetchRawTemperature(GPIO['climate_GPIO'])
     data['humidity'] = fetchRawHumidity(GPIO['climate_GPIO'])
     '''
-    data['light_status'] = getGPIOState(GPIO['light_GPIO'])
     data['moisture_status'] = getGPIOState(GPIO['moisture_GPIO'])
-    data['fan_status'] = getGPIOState(GPIO['fan_GPIO'])
-    data['pump_status'] = getGPIOState(GPIO['pump_GPIO'])
     '''
     print(data)
     return data
@@ -52,6 +55,10 @@ def getGrowData():
 
 def growDataUpdate(data):
     print("Update DB")
+    add_sensor_data({
+        'air_temp': data['temperature'],
+        'humidity': data['humidity'],
+        'moister': round(random.uniform(1.0, 100.0), 2)})
 
 
 # Fetch Raw Temperature
@@ -83,7 +90,16 @@ def fetchRawHumidity(gpioPIN):
         print("Sensor Error!")
 
 
+def setLight():
+    GPIO = fetchSensorGPIO()
+    print(GPIO)
+    print(GPIO['climate_GPIO'])
+    os.system("python " + "/pyt-8-Way-Relay-Board/k8_box.py" + " set-relay -r " + str(2) + " -s 1")
+
+
 schedule.every(1).minutes.do(getGrowData)
+schedule.every(10).seconds.do(setLight)
+
 
 while True:
     print("ah faaa")

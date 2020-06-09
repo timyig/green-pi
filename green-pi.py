@@ -11,7 +11,7 @@ from time import strftime
 import Adafruit_DHT as dht
 import random
 
-#from db import add_sensor_data
+from db import add_sensor_data
 
 __author__ = "Timur Yigit"
 __version__ = "0.1.0"

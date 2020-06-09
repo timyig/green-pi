@@ -1,3 +1,4 @@
+---
 name: Docker Build/Publish Image
 on:
   push:
@@ -39,7 +40,15 @@ jobs:
       - name: Docker Login
         if: success()
         run: |
-          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+          echo "${DOCKER_PASSWORD}" |
+          docker login --username "${DOCKER_USERNAME}" --password-stdin
       - name: Run Buildx (push image)
         if: success()
-        run: docker buildx build --cache-from "type=local,src=/tmp/.buildx-cache" --cache-to "type=local,dest=/tmp/.buildx-cache" --platform ${{ steps.prepare.outputs.docker_platform }} --output "type=image,push=true" --tag ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} --file ./Dockerfile ./
+        run: |
+          docker buildx build
+          --cache-from "type=local,src=/tmp/.buildx-cache"
+          --cache-to "type=local,dest=/tmp/.buildx-cache"
+          --platform ${{ steps.prepare.outputs.docker_platform }}
+          --output "type=image,push=true"
+          --tag ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}
+          --file ./Dockerfile ./

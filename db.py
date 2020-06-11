@@ -69,7 +69,7 @@ def get_schedule(schedule_id, session=None):
             raise ScheduleNotFoundException('Schedule not found')
         return schedule
 
-def update_schedule(schedule_id, start_schedule, end_schedule, enabled, device_id, last_state=None):
+def update_schedule(schedule_id, start_schedule=None end_schedule=None, enabled=True, device_id=None, last_state=None):
     with session_scope() as session:
         schedule = get_schedule(schedule_id)
         schedule.start_schedule = start_schedule or schedule.start_schedule

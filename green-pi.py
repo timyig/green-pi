@@ -118,8 +118,7 @@ def scheduleJob():
     for e in evente:
         state = OFF
 
-        if current_time > e.start_schedule and
-        current_time <= e.end_schedule:
+        if current_time > e.start_schedule and current_time <= e.end_schedule:
             logging.debug("Setting relay state to ON for: %d", e.device_id)
             state = ON
         else:

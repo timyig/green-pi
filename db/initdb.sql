@@ -10,8 +10,8 @@ CREATE TABLE sensor_data (
 CREATE TABLE schedule_data (
 	id SERIAL NOT NULL, 
 	device_id INTEGER,
-    start_schedule TIMESTAMP,
-    end_schedule TIMESTAMP,
+    start_schedule TIME,
+    end_schedule TIME,
     enable_schedule INTEGER,
     last_state INTEGER,
 	PRIMARY KEY (id)

@@ -89,6 +89,30 @@ def fetchRawHumidity(gpioPIN):
     except Exception:
         logging.error("sensor error: ", exc_info=True)
 
+
+# Fetch Raw Humidity
+def fetchOnTime():
+    ''' Return minutes of day to trigger an On event '''
+    logging.debug("fetching off time")
+    time = (time.datetime.now().hour * 60) + (time.datetime.now().minutes) + 61
+
+    return time
+
+
+# Fetch Raw Humidity
+def fetchOffTime():
+    ''' Return minutes of day to trigger an Off event '''
+    logging.debug("fetching off time")
+    time = (time.datetime.now().hour * 60) + (time.datetime.now().minutes) +121
+    return time
+
+
+def scheduleLights():
+    current_time = (time.datetime.now().hour * 60) + (time.datetime.now().minutes)
+    off_time = fetchOffTime()
+    on_time = fetchOnTime()
+
+
 '''
 def setLight():
     GPIO = fetchSensorGPIO()

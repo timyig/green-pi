@@ -20,6 +20,9 @@ __license__ = "MIT"
 logging.basicConfig(level=logging.DEBUG)
 relay_script_path = os.environ.get("/pyt-8-Way-Relay-Board/k8_box.py")
 
+OFF = 0
+ON = 1
+
 '''
 def job():
     add_sensor_data({
@@ -91,38 +94,45 @@ def fetchRawHumidity(gpioPIN):
 
 
 # Fetch Raw Humidity
-def fetchOnTime():
+def fetchOnEvent():
     ''' Return minutes of day to trigger an On event '''
     logging.debug("fetching off time")
-    time = (time.datetime.now().hour * 60) + (time.datetime.now().minutes) + 61
-
-    return time
+    events = get_start_schedules()
+    return events
 
 
 # Fetch Raw Humidity
-def fetchOffTime():
+def fetchOffEvent():
     ''' Return minutes of day to trigger an Off event '''
     logging.debug("fetching off time")
-    time = (time.datetime.now().hour * 60) + (time.datetime.now().minutes) +121
-    return time
+    events = get_end_schedules()
+    return events
 
 
-def scheduleLights():
-    current_time = (time.datetime.now().hour * 60) + (time.datetime.now().minutes)
-    off_time = fetchOffTime()
-    on_time = fetchOnTime()
+def scheduleJob():
+    logging.debug("scheduleJob")
+    events = get_schedule()
+    current_time = datetime.time.now()
 
 
-'''
-def setLight():
-    GPIO = fetchSensorGPIO()
-    logging.info(GPIO)
-    logging.info(GPIO['climate_GPIO'])
-    os.system("python " + "/pyt-8-Way-Relay-Board/k8_box.py" + " set-relay -r " + str(2) + " -s 1")
-'''
+    for e in evente:
+        state = OFF
+
+        if current_time > e.start_schedule and
+        current_time <= e.end_schedule:
+            logging.debug("Setting relay state to ON for: %d", e.device_id)
+            state = ON
+        else:
+            logging.debug("Setting relay state to OFF for: %d", e.device_id)
+            state = OFF
+        if state != e.last_state:
+            #os.system("python " + "/pyt-8-Way-Relay-Board/k8_box.py" + " set-relay -r " + str(relay) + " -s " + str(state)
+            logging.debug("Setting relay %d to %d", e.device_id, state)
+            update_schedule(e.id, device_id=e.device_id, last_state=state)
+
 
 schedule.every(1).minutes.do(getGrowData)
-#schedule.every(10).seconds.do(setLight)
+schedule.every(1).seconds.do(scheduleJob)
 
 
 while True:

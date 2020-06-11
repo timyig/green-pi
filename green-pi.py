@@ -12,6 +12,8 @@ import Adafruit_DHT as dht
 import random
 
 from db import add_sensor_data
+from db import get_schedules
+from db import update_schedule
 
 __author__ = "Timur Yigit"
 __version__ = "0.1.0"
@@ -111,7 +113,7 @@ def fetchOffEvent():
 
 def scheduleJob():
     logging.debug("scheduleJob")
-    events = get_schedule()
+    events = get_schedules()
     current_time = datetime.time.now()
 
 

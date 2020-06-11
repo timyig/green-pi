@@ -49,7 +49,7 @@ def getGrowData():
     '''
     data['moisture_status'] = getGPIOState(GPIO['moisture_GPIO'])
     '''
-    logging.info(data)
+    growDataUpdate(data)
     return data
 
 

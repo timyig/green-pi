@@ -43,7 +43,7 @@ class ScheduleData(Base):
     start_schedule = Column(Time)
     end_schedule = Column(Time)
     last_state = Column(Integer)
-    enable_schedule = Column(Boolean)
+    enable_schedule = Column(Integer)
 
 def add_sensor_data(data):
     with session_scope() as session:
@@ -93,4 +93,4 @@ def disabe_schedule(schedule_id):
     
 def get_schedules():
     with session_scope() as session:
-        return session.query(ScheduleData).filter(ScheduleData.enable_schedule==True).all()
+        return session.query(ScheduleData).filter(ScheduleData.enable_schedule==1).all()

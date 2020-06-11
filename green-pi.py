@@ -7,9 +7,10 @@ import os
 import logging
 import schedule
 import time
+from datetime import datetime
 from time import strftime
-import Adafruit_DHT as dht
 import random
+
 
 from db import add_sensor_data
 from db import get_schedules
@@ -20,6 +21,12 @@ __version__ = "0.1.0"
 __license__ = "MIT"
 
 logging.basicConfig(level=logging.DEBUG)
+
+try:
+    import Adafruit_DHT as dht
+except:
+    logging.error('Was not able to import Adafruit_DHT')
+
 relay_script_path = os.environ.get("/pyt-8-Way-Relay-Board/k8_box.py")
 
 OFF = 0
@@ -114,10 +121,10 @@ def fetchOffEvent():
 def scheduleJob():
     logging.debug("scheduleJob")
     events = get_schedules()
-    current_time = datetime.time.now()
+    current_time = datetime.now().time()
 
 
-    for e in evente:
+    for e in events:
         state = OFF
 
         if current_time > e.start_schedule and current_time <= e.end_schedule:

@@ -21,6 +21,7 @@ services:
       - db
     environment:
       GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
+    privileged: true
     devices:
       - /dev/gpiomem:/dev/gpiomem
   db:

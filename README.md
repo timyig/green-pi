@@ -8,4 +8,4 @@ Raspberry Pi - Caretaker for plants
 
 ## Running on rpi
 
-`docker-compose run -f docker-compose.rpi.yml -d`
+`docker-compose -f docker-compose.rpi.yml up`

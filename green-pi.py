@@ -72,8 +72,8 @@ def fetchRawTemperature(gpioPIN):
             return data_output
         else:
             print('Failed to get reading. Try again!')
-    except:
-        print("Sensor Error!")
+    except Exception as e:
+        print("Sensor Error!: " + str(e))
 
 # Fetch Raw Humidity
 def fetchRawHumidity(gpioPIN):

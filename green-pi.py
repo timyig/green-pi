@@ -49,12 +49,12 @@ def getGrowData():
     '''
     data['moisture_status'] = getGPIOState(GPIO['moisture_GPIO'])
     '''
-    print(data)
+    logging.info(data)
     return data
 
 
 def growDataUpdate(data):
-    print("Update DB")
+    logging.info("Update DB")
     add_sensor_data({
         'air_temp': data['temperature'],
         'humidity': data['humidity'],
@@ -68,10 +68,10 @@ def fetchRawTemperature(gpioPIN):
 
         if temperature is not None:
             data_output = round(temperature, 2)
-            print(data_output)
+            logging.info(data_output)
             return data_output
         else:
-            print('Failed to get reading. Try again!')
+            logging.info('Failed to get reading. Try again!')
     except Exception:
         logging.error("sensor error: ", exc_info=True)
 
@@ -82,18 +82,18 @@ def fetchRawHumidity(gpioPIN):
 
         if humidity is not None and humidity <= 100:
             data_output = round(humidity, 2)
-            print(data_output)
+            logging.info(data_output)
             return data_output
         else:
-            print('Failed to get reading. Try again!')
-    except:
-        print("Sensor Error!")
+            logging.info('Failed to get reading. Try again!')
+    except Exception:
+        logging.error("sensor error: ", exc_info=True)
 
 '''
 def setLight():
     GPIO = fetchSensorGPIO()
-    print(GPIO)
-    print(GPIO['climate_GPIO'])
+    logging.info(GPIO)
+    logging.info(GPIO['climate_GPIO'])
     os.system("python " + "/pyt-8-Way-Relay-Board/k8_box.py" + " set-relay -r " + str(2) + " -s 1")
 '''
 

@@ -60,35 +60,32 @@ def add_schedule(start_schedule, end_schedule, enabled, device_id):
             last_state=None
         ))
 
-def get_schedule(schedule_id, session=None):
-    if session is None:
-        session = session_scope()
-    with session:
+def update_schedule(schedule_id, start_schedule=None, end_schedule=None, enabled=True, device_id=None, last_state=None):
+    with session_scope() as session:
         schedule = session.query(ScheduleData).get(schedule_id)
         if schedule is None:
             raise ScheduleNotFoundException('Schedule not found')
-        return schedule
-
-def update_schedule(schedule_id, start_schedule=None, end_schedule=None, enabled=True, device_id=None, last_state=None):
-    with session_scope() as session:
-        schedule = get_schedule(schedule_id)
         schedule.start_schedule = start_schedule or schedule.start_schedule
         schedule.end_schedule = end_schedule or schedule.end_schedule
         schedule.enable_schedule = enabled if enabled is not None else schedule.enable_schedule
         schedule.device_id = device_id if device_id is not None else schedule.device_id
-        Schedule.last_state = last_state or Schedule.last_state
+        schedule.last_state = last_state or schedule.last_state
         session.commit()
 
 def enable_schedule(schedule_id):
     with session_scope() as session:
-        schedule = get_schedule(schedule_id, session)
-        Schedule.enable_schedule = True
+        schedule = session.query(ScheduleData).get(schedule_id)
+        if schedule is None:
+            raise ScheduleNotFoundException('Schedule not found')
+        schedule.senable_schedule = True
         session.commit()
 
 def disabe_schedule(schedule_id):
     with session_scope() as session:
-        schedule = get_schedule(schedule_id, session)
-        Schedule.enable_schedule = True
+        schedule = session.query(ScheduleData).get(schedule_id)
+        if schedule is None:
+            raise ScheduleNotFoundException('Schedule not found')
+        schedule.enable_schedule = False
         session.commit()
     
 def get_schedules():

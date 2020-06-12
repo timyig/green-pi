@@ -93,5 +93,6 @@ def disabe_schedule(schedule_id):
     
 def get_schedules():
     with session_scope() as session:
+        schedules = session.query(ScheduleData).filter(ScheduleData.enable_schedule==1).all()
         session.expunge_all()
-        return session.query(ScheduleData).filter(ScheduleData.enable_schedule==1).all()
+        return schedules

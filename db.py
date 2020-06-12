@@ -61,7 +61,7 @@ def add_schedule(start_schedule, end_schedule, enabled, device_id):
         ))
 
 def get_schedule(schedule_id, session=None):
-    if session is not None:
+    if session is None:
         session = session_scope()
     with session:
         schedule = sesssion.query(ScheduleData).get(schedule_id)

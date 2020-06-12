@@ -11,7 +11,6 @@ from datetime import datetime
 from time import strftime
 import random
 
-
 from db import add_sensor_data
 from db import get_schedules
 from db import update_schedule
@@ -87,6 +86,7 @@ def fetchRawTemperature(gpioPIN):
     except Exception:
         logging.error("sensor error: ", exc_info=True)
 
+
 # Fetch Raw Humidity
 def fetchRawHumidity(gpioPIN):
     try:
@@ -100,22 +100,6 @@ def fetchRawHumidity(gpioPIN):
             logging.info('Failed to get reading. Try again!')
     except Exception:
         logging.error("sensor error: ", exc_info=True)
-
-
-# Fetch Raw Humidity
-def fetchOnEvent():
-    ''' Return minutes of day to trigger an On event '''
-    logging.debug("fetching off time")
-    events = get_start_schedules()
-    return events
-
-
-# Fetch Raw Humidity
-def fetchOffEvent():
-    ''' Return minutes of day to trigger an Off event '''
-    logging.debug("fetching off time")
-    events = get_end_schedules()
-    return events
 
 
 def scheduleJob():

@@ -64,7 +64,7 @@ def get_schedule(schedule_id, session=None):
     if session is None:
         session = session_scope()
     with session:
-        schedule = sesssion.query(ScheduleData).get(schedule_id)
+        schedule = session.query(ScheduleData).get(schedule_id)
         if schedule is None:
             raise ScheduleNotFoundException('Schedule not found')
         return schedule

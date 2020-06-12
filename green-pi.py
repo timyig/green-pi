@@ -19,7 +19,7 @@ __author__ = "Timur Yigit"
 __version__ = "0.1.0"
 __license__ = "MIT"
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.DEBUG)
 
 try:
     import Adafruit_DHT as dht

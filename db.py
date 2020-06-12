@@ -69,7 +69,7 @@ def update_schedule(schedule_id, start_schedule=None, end_schedule=None, enabled
         schedule.end_schedule = end_schedule or schedule.end_schedule
         schedule.enable_schedule = enabled if enabled is not None else schedule.enable_schedule
         schedule.device_id = device_id if device_id is not None else schedule.device_id
-        schedule.last_state = last_state or schedule.last_state
+        schedule.last_state = last_state if last_state is not None else schedule.last_state
         session.commit()
 
 def enable_schedule(schedule_id):

@@ -13,5 +13,8 @@ RUN git clone https://github.com/t-xigit/pyt-8-Way-Relay-Board.git && \
     cd pyt-8-Way-Relay-Board && \
     pip install -r requirements.txt
 
-COPY . .
+VOLUME ["~/repos/green-pi/green-pi.py", "{WORKDIR}/green-pi.py"]
+VOLUME ["~/repos/green-pi/db.py", "{WORKDIR}/db.py"]
+
+
 CMD [ "python", "./green-pi.py" ]

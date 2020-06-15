@@ -4,7 +4,7 @@ version: '3'
 
 services:
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana-arm32v7-linux
     ports:
       - 3000:3000
     networks:
@@ -13,28 +13,32 @@ services:
       - db
     volumes:
       - grafana_data:/var/lib/grafana
-  green-pi:
-    build: .
-    networks:
-      - web
-    links:
-      - db
-    environment:
-      GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
-    command: python ./green-pi.py
   green-pi-api:
-    build: .
-    command: gunicorn api:app -b 0.0.0.0 --access-logfile=/dev/stdout --error-logfile=/dev/stdout
+    image: tigit/green-pi:master
     networks:
       - web
     links:
       - db
     environment:
       GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
+    command: gunicorn api:app -b 0.0.0.0 --access-logfile=/dev/stdout --error-logfile=/dev/stdout
     ports:
       - 8000:8000
+  green-pi:
+    image: tigit/green-pi:master
+    networks:
+      - web
+    links:
+      - db
+    volumes:
+      - python_app:/home/pi/green-pi/
+    environment:
+      GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
+    privileged: true
+    devices:
+      - /dev/gpiomem:/dev/gpiomem
   db:
-    image: postgres:10
+    image: arm32v7/postgres:10
     restart: always
     environment:
       POSTGRES_PASSWORD: "green-pi"

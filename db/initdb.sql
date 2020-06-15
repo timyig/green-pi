@@ -13,6 +13,7 @@ CREATE TABLE schedule_data (
     start_schedule TIME,
     end_schedule TIME,
     enable_schedule INTEGER,
+	manual_schedule INTEGER,
     last_state INTEGER,
 	PRIMARY KEY (id)
 );

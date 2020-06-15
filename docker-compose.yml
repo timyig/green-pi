@@ -60,3 +60,6 @@ volumes:
     driver: local
   db_data:
     driver: local
+  python_app:
+    driver: local
+

@@ -31,12 +31,14 @@ services:
     links:
       - db
     volumes:
-      - python_app:/home/pi/green-pi/
+      - .:/usr/src/app
     environment:
       GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
     privileged: true
     devices:
       - /dev/gpiomem:/dev/gpiomem
+    depends_on:
+      - db
   db:
     image: arm32v7/postgres:10
     restart: always
@@ -59,7 +61,5 @@ volumes:
   grafana_data:
     driver: local
   db_data:
-    driver: local
-  python_app:
     driver: local
 

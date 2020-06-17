@@ -13,5 +13,4 @@ RUN git clone --branch master --single-branch --depth 1 https://github.com/t-xig
     cd pyt-8-Way-Relay-Board && \
     pip install -r requirements.txt
 
-
 CMD [ "python", "./green-pi.py" ]

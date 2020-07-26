@@ -1,6 +1,6 @@
 import os
 from sqlalchemy import create_engine
-from sqlalchemy import Column, Integer, DateTime, Numeric, Sequence, Boolean, Time
+from sqlalchemy import Column, Integer, DateTime, Numeric, Time
 from sqlalchemy.sql import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -11,20 +11,23 @@ engine = create_engine(os.environ.get('GREEN_PI_DB_CONNECTION'))
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 
+
 @contextmanager
 def session_scope():
     session = Session()
     try:
         yield session
         session.commit()
-    except:
+    except BaseException:
         session.rollback()
         raise
     finally:
         session.close()
 
+
 class ScheduleNotFoundException(BaseException):
     pass
+
 
 class SensorData(Base):
     __tablename__ = 'sensor_data'
@@ -34,6 +37,7 @@ class SensorData(Base):
     humidity = Column(Numeric())
     moister = Column(Numeric())
     created_date = Column(DateTime(timezone=True), server_default=func.now())
+
 
 class ScheduleData(Base):
     __tablename__ = 'schedule_data'
@@ -45,6 +49,7 @@ class ScheduleData(Base):
     last_state = Column(Integer)
     manual_schedule = Column(Integer)
     enable_schedule = Column(Integer)
+
 
 def add_sensor_data(data):
     with session_scope() as session:
@@ -62,6 +67,7 @@ def add_schedule(start_schedule, end_schedule, enabled, device_id, manual_schedu
             last_state=None
         ))
 
+
 def update_schedule(schedule_id, start_schedule=None, end_schedule=None, enabled=True, device_id=None, last_state=None):
     with session_scope() as session:
         schedule = session.query(ScheduleData).get(schedule_id)
@@ -74,6 +80,7 @@ def update_schedule(schedule_id, start_schedule=None, end_schedule=None, enabled
         schedule.last_state = last_state if last_state is not None else schedule.last_state
         session.commit()
 
+
 def enable_schedule(schedule_id):
     with session_scope() as session:
         schedule = session.query(ScheduleData).get(schedule_id)
@@ -81,6 +88,7 @@ def enable_schedule(schedule_id):
             raise ScheduleNotFoundException('Schedule not found')
         schedule.enable_schedule = 1
         session.commit()
+
 
 def disabe_schedule(schedule_id):
     with session_scope() as session:
@@ -90,6 +98,7 @@ def disabe_schedule(schedule_id):
         schedule.enable_schedule = 0
         session.commit()
 
+
 def delete_schedule(schedule_id):
     with session_scope() as session:
         schedule = session.query(ScheduleData).get(schedule_id)
@@ -97,12 +106,13 @@ def delete_schedule(schedule_id):
             raise ScheduleNotFoundException('Schedule not found')
         session.delete(schedule)
         session.commit()
-    
+
+
 def get_schedules(with_disabled=False):
     with session_scope() as session:
         schedules = session.query(ScheduleData)
         if not with_disabled:
-            schedules = schedules.filter(ScheduleData.enable_schedule==1)
+            schedules = schedules.filter(ScheduleData.enable_schedule == 1)
         schedules = schedules.all()
         session.expunge_all()
         return schedules

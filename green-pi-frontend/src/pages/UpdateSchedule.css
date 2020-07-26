@@ -1,0 +1,43 @@
+#view-schedule-page ion-item {
+  --inner-padding-end: 0;
+  --padding-start: 0;
+  --background: transparent;
+  margin-left: 12px;
+  margin-right: 12px;
+}
+
+#view-schedule-page ion-label {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+#view-schedule-page ion-item h2 {
+  font-weight: 600;
+}
+
+#view-schedule-page ion-item .date {
+  float: right;
+  align-items: center;
+  display: flex;
+}
+
+#view-schedule-page ion-item ion-icon {
+  font-size: 42px;
+  margin-right: 8px;
+}
+
+#view-schedule-page ion-item ion-note {
+  font-size: 15px;
+  margin-right: 12px;
+  font-weight: normal;
+}
+
+#view-schedule-page h1 {
+  margin: 0;
+  font-weight: bold;
+  font-size: 22px;
+}
+
+#view-schedule-page p {
+  line-height: 22px;
+}

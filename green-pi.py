@@ -104,10 +104,9 @@ def fetchRawHumidity(gpioPIN):
 
 def scheduleJob():
     logging.debug("scheduleJob")
-    events = get_schedules()
+    #events = get_schedules()
     current_time = datetime.now().time()
-
-
+    '''
     for e in events:
         state = OFF
 
@@ -121,10 +120,11 @@ def scheduleJob():
             #os.system("python " + "/pyt-8-Way-Relay-Board/k8_box.py" + " set-relay -r " + str(relay) + " -s " + str(state)
             logging.debug("Setting relay %d to %d", e.device_id, state)
             update_schedule(e.id, device_id=e.device_id, last_state=state)
+    '''
 
 
 schedule.every(1).minutes.do(getGrowData)
-schedule.every(1).seconds.do(scheduleJob)
+#schedule.every(1).seconds.do(scheduleJob)
 
 
 while True:

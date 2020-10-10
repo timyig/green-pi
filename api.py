@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from db import get_schedules, update_schedule, enable_schedule, disabe_schedule, add_schedule, delete_schedule
 from marshmallow import Schema, fields
 import logging
@@ -10,11 +11,12 @@ class ScheduleSchema(Schema):
     end_schedule = fields.Time()
     enable_schedule = fields.Bool()
     manual_schedule = fields.Bool()
+    last_state = fields.Int()
     device_id = fields.Int()
 
 
 app = Flask(__name__)
-
+CORS(app)
 
 @app.route('/schedules', methods=['GET'])
 def schedules():

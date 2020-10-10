@@ -22,7 +22,7 @@ const ScheduleListItem: React.FC<ScheduleListItemProps> = ({ schedule }) => {
       <IonLabel className="ion-text-wrap">
         <h2> <span>Schedule From</span> <b>{schedule.startSchedule}</b> <span> To </span> <b>{schedule.endSchedule}</b></h2>
         <p>Device ID: <b>{schedule.deviceId}</b></p>
-        <p>Manual Schedule: <b>{schedule.manualSchedule.toString()}</b></p>
+        <p>Manual Schedule: <b>{String(schedule.manualSchedule)}</b></p>
         <p>Last State: <b>{schedule.lastState}</b></p>
       </IonLabel>
       <IonButton href={"/schedule/" + schedule.id} slot="end" size="default" color="secondary">

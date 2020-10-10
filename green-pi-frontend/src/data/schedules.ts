@@ -8,27 +8,41 @@ export interface Schedule {
   id: number;
 }
 
-const schedules: Schedule[] = [
-  {
-    startSchedule: '08:00:00',
-    endSchedule: '18:00:00',
-    enableSchedule: true,
-    manualSchedule: true,
-    lastState: 1,
-    deviceId: 1,
-    id: 1
-  },
-  {
-    startSchedule: '09:00:00',
-    endSchedule: '19:00:00',
-    enableSchedule: false,
-    manualSchedule: true,
-    deviceId: 2,
-    lastState: 1,
-    id: 2
-  }
-];
+export const getSchedules = () => {
+  return fetch('http://localhost:8000/schedules')
+  .then((response) => response.json())
+  .then((data) => {
+    Object.keys(data).map((key) => {
+      let schd = data[key];
+      schd.startSchedule = schd.start_schedule;
+      schd.endSchedule = schd.end_schedule;
+      schd.enableSchedule = schd.enable_schedule;
+      schd.manualSchedule = schd.manual_schedule;
+      schd.lastState = schd.last_state;
+      schd.deviceId = schd.device_id;
+      return schd;
+    });
+    console.log(data);
+    return data;
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+};
 
-export const getSchedules = () => schedules;
-
-export const getSchedule = (id: number) => schedules.find(m => m.id === id);
+export const getSchedule = (id: number) => {
+  return fetch(`http://localhost:8000/schedules/${id}`)
+  .then((response) => response.json())
+  .then((data) => {
+    data.startSchedule = data.start_schedule;
+    data.endSchedule = data.end_schedule;
+    data.enableSchedule = data.enable_schedule;
+    data.manualSchedule = data.manual_schedule;
+    data.lastState = data.last_state;
+    data.deviceId = data.device_id;
+    return data;
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+};

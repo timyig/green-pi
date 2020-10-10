@@ -19,8 +19,7 @@ const Home: React.FC = () => {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
 
   useIonViewWillEnter(() => {
-    const scheds = getSchedules();
-    setSchedules(scheds);
+    getSchedules().then((scheds) => setSchedules(scheds));
   });
 
   const refresh = (e: CustomEvent) => {

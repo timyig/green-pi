@@ -23,7 +23,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=loggin
 
 try:
     import Adafruit_DHT as dht
-except:
+except BaseException:
     logging.error('Was not able to import Adafruit_DHT')
 
 relay_script_path = os.environ.get("/pyt-8-Way-Relay-Board/k8_box.py")
@@ -38,6 +38,7 @@ def job():
         'humidity': round(random.uniform(1.0, 100.0), 2),
         'moister': round(random.uniform(1.0, 100.0), 2)})
 '''
+
 
 # Get list all sensor GPIO pins stored in DB
 def fetchSensorGPIO():
@@ -90,7 +91,7 @@ def fetchRawTemperature(gpioPIN):
 # Fetch Raw Humidity
 def fetchRawHumidity(gpioPIN):
     try:
-        humidity,temperature = dht.read_retry(dht.DHT22, int(gpioPIN))
+        humidity, temperature = dht.read_retry(dht.DHT22, int(gpioPIN))
 
         if humidity is not None and humidity <= 100:
             data_output = round(humidity, 2)
@@ -104,9 +105,9 @@ def fetchRawHumidity(gpioPIN):
 
 def scheduleJob():
     logging.debug("scheduleJob")
-    #events = get_schedules()
+    events = get_schedules()
     current_time = datetime.now().time()
-    '''
+
     for e in events:
         state = OFF
 
@@ -117,14 +118,13 @@ def scheduleJob():
             logging.debug("Setting relay state to OFF for: %d", e.device_id)
             state = OFF
         if state != e.last_state:
-            #os.system("python " + "/pyt-8-Way-Relay-Board/k8_box.py" + " set-relay -r " + str(relay) + " -s " + str(state)
+            os.system("python " + "/pyt-8-Way-Relay-Board/k8_box.py"
+                + " set-relay -r " + str(relay) + " -s " + str(state)
             logging.debug("Setting relay %d to %d", e.device_id, state)
             update_schedule(e.id, device_id=e.device_id, last_state=state)
-    '''
-
 
 schedule.every(1).minutes.do(getGrowData)
-#schedule.every(1).seconds.do(scheduleJob)
+schedule.every(1).seconds.do(scheduleJob)
 
 
 while True:

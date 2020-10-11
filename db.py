@@ -108,6 +108,15 @@ def delete_schedule(schedule_id):
         session.commit()
 
 
+def get_schedule(schedule_id):
+    with session_scope() as session:
+        schedule = session.query(ScheduleData).get(schedule_id)
+        if schedule is None:
+            raise ScheduleNotFoundException('Schedule not found')
+        session.expunge_all()
+        return schedule
+
+
 def get_schedules(with_disabled=False):
     with session_scope() as session:
         schedules = session.query(ScheduleData)

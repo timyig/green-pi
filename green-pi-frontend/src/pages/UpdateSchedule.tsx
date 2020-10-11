@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Schedule, getSchedules, getSchedule } from '../data/schedules';
-import { star, save } from 'ionicons/icons';
+import React, { useState, useContext, FormEvent } from 'react';
+import { Schedule, getSchedule, updateSchedule, createSchedule } from '../data/schedules';
+
 import {
   IonBackButton,
   IonButton,
   IonIcon,
+  IonNote,
   IonButtons,
   IonContent,
   IonHeader,
@@ -19,7 +20,8 @@ import {
   IonDatetime,
   useIonViewWillEnter
 } from '@ionic/react';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps, Router } from 'react-router';
+import {NavContext} from '@ionic/react'
 import './UpdateSchedule.css';
 import ScheduleListItem from '../components/ScheduleListItem';
 
@@ -28,26 +30,41 @@ interface UpdateScheduleProps extends RouteComponentProps<{ id: string; }> { }
 const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ match }) => {
 
   const [schedule, setSchedule] = useState<Schedule>();
+  const {goBack} = useContext(NavContext);
   
   useIonViewWillEnter(() => {
-    getSchedule(parseInt(match.params.id, 10)).then((schd) => {
-      if (!schd) {
-        setSchedule({
-          startSchedule: '08:00:00',
-          endSchedule: '18:00:00',
-          enableSchedule: true,
-          manualSchedule: true,
-          lastState: 0,
-          deviceId: 1,
-          id: -1
-        });
-      } else {
+    let scheduleId = parseInt(match.params.id, 10)
+    if (isNaN(scheduleId)) {
+      setSchedule({
+        startSchedule: '08:00:00',
+        endSchedule: '18:00:00',
+        enableSchedule: true,
+        manualSchedule: true,
+        lastState: 0,
+        deviceId: 1,
+        id: -1
+      });
+    }
+    else {
+      getSchedule(parseInt(match.params.id, 10)).then((schd) => {
         setSchedule(schd);
-      }
-    });
+      });
+    }
   });
 
+  const handleSubmit = (e: FormEvent<HTMLFormElement>, schedule: Schedule) => {
+    e.preventDefault();
+    let scheduleId = parseInt(match.params.id, 10);
+    if (isNaN(scheduleId)) {
+      createSchedule(schedule);
+    } else {
+      updateSchedule(scheduleId, schedule);
+    }
+    goBack("/home");
+  }
+
   return (
+
     <IonPage id="view-schedule-page">
       <IonHeader translucent>
         <IonToolbar>
@@ -59,6 +76,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ match }) => {
 
       <IonContent fullscreen>
         {schedule ? (
+          <form className="ion-padding" onSubmit={e => handleSubmit(e, schedule)}>
           <IonList>
             <IonItem>
               <IonLabel>Schedule From</IonLabel>
@@ -93,9 +111,10 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ match }) => {
                 <IonSelectOption value="16">16</IonSelectOption>
               </IonSelect>
             </IonItem>
-            <IonButton expand="block">Save</IonButton>
+            <IonButton type="submit" className="ion-margin-top" expand="block">Save</IonButton>
           </IonList>
-        ) : <div>Schedule not found</div>}
+          </form>
+        ) : <IonNote id="error-message" className="ion-padding" color="danger"><h3>Schedule not found</h3></IonNote>}
       </IonContent>
     </IonPage>
   );

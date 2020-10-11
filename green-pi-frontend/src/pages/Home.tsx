@@ -9,9 +9,13 @@ import {
   IonRefresher,
   IonRefresherContent,
   IonTitle,
+  IonFab, 
+  IonFabButton, 
+  IonIcon,
   IonToolbar,
   useIonViewWillEnter
 } from '@ionic/react';
+import { add } from 'ionicons/icons';
 import './Home.css';
 
 const Home: React.FC = () => {
@@ -23,10 +27,15 @@ const Home: React.FC = () => {
   });
 
   const refresh = (e: CustomEvent) => {
-    setTimeout(() => {
+    getSchedules().then((scheds) => {
+      setSchedules(scheds);
       e.detail.complete();
-    }, 3000);
+    });    
   };
+
+  const handleDelete = (e: CustomEvent, id: number) => {
+    setSchedules(schedules.filter(elem => elem.id != id));
+  }
 
   return (
     <IonPage id="home-page">
@@ -49,8 +58,13 @@ const Home: React.FC = () => {
         </IonHeader>
 
         <IonList>
-          {schedules.map(m => <ScheduleListItem key={m.id} schedule={m} />)}
+          {schedules.map(m => <ScheduleListItem onItemDelete={(e: CustomEvent) => {handleDelete(e, m.id)}} key={m.id} schedule={m} />)}
         </IonList>
+        <IonFab vertical="bottom" horizontal="end" slot="fixed">
+          <IonFabButton href={"/schedule/new"}>
+            <IonIcon icon={add} />
+          </IonFabButton>
+        </IonFab>
       </IonContent>
     </IonPage>
   );

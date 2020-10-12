@@ -13,4 +13,12 @@ RUN git clone --branch master --single-branch --depth 1 https://github.com/t-xig
     cd pyt-8-Way-Relay-Board && \
     pip install -r requirements.txt
 
+RUN wget https://nodejs.org/dist/v10.16.1/node-v10.16.1-linux-armv7l.tar.xz && \
+    tar -xJf node-v10.16.1-linux-armv7l.tar.xz && \
+    cd node-v10.16.1-linux-armv7l/ && \
+    cp -R * /usr/local/ && \
+    npm config set unsafe-perm true
+
+RUN npm install -g @ionic/cli
+
 CMD [ "python", "./green-pi.py" ]

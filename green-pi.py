@@ -118,8 +118,7 @@ def scheduleJob():
             logging.debug("Setting relay state to OFF for: %d", e.device_id)
             state = OFF
         if state != e.last_state:
-            os.system("python " + "/pyt-8-Way-Relay-Board/k8_box.py" + \
-                " set-relay -r " + str(relay) + " -s " + str(state)
+            os.system('python pyt-8-Way-Relay-Board/k8_box.py set-relay -r {relay} -s {state}'.format(relay=e.device_id, state=state))
             logging.debug("Setting relay %d to %d", e.device_id, state)
             update_schedule(e.id, device_id=e.device_id, last_state=state)
 

@@ -27,16 +27,16 @@ services:
       # REACT_APP_GREEN_PI_BACKEND_HOST: http://greenpi:8000
       REACT_APP_GREEN_PI_BACKEND_HOST: http://localhost:8000
     command: ionic serve
-    volumes:
-      - .:/usr/src/app
+    # volumes:
+    #   - .:/usr/src/app
     ports:
       - 80:8100
   green-pi-api:
     image: tigit/green-pi:master
     networks:
       - web
-    volumes:
-      - .:/usr/src/app
+    # volumes:
+    #   - .:/usr/src/app
     links:
       - db
     environment:
@@ -50,8 +50,8 @@ services:
       - web
     links:
       - db
-    volumes:
-      - .:/usr/src/app
+    # volumes:
+    #   - .:/usr/src/app
     environment:
       GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
     privileged: true

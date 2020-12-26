@@ -13,6 +13,9 @@ services:
       - db
     volumes:
       - grafana_data:/var/lib/grafana
+    depends_on:
+      - db
+
   green-pi-frontend:
     image: tigit/green-pi:master
     working_dir: /usr/src/app/green-pi-frontend
@@ -79,4 +82,3 @@ volumes:
     driver: local
   db_data:
     driver: local
-

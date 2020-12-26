@@ -41,3 +41,7 @@
 #view-schedule-page p {
   line-height: 22px;
 }
+
+#error-message {
+  text-align: center;
+}

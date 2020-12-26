@@ -13,12 +13,32 @@ services:
       - db
     volumes:
       - grafana_data:/var/lib/grafana
+<<<<<<< HEAD
     depends_on:
       - db
+=======
+  green-pi-frontend:
+    image: tigit/green-pi:master
+    working_dir: /usr/src/app/green-pi-frontend
+    networks:
+      - web
+    links:
+      - green-pi-api
+    environment:
+      # GREEN_PI_BACKEND_HOST: http://greenpi:8000
+      GREEN_PI_BACKEND_HOST: http://localhost:8000
+    command: ionic serve
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 80:8100
+>>>>>>> 6780798a0729dd0870b1432f2dba649d003bd3ec
   green-pi-api:
     image: tigit/green-pi:master
     networks:
       - web
+    volumes:
+      - .:/usr/src/app
     links:
       - db
     environment:

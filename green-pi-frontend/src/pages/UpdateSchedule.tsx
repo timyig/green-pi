@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Schedule, getSchedules, getSchedule } from '../data/schedules';
-import { star, save } from 'ionicons/icons';
+import React, { useState, useContext, FormEvent } from 'react';
+import { Schedule, getSchedule, updateSchedule, createSchedule } from '../data/schedules';
+
 import {
   IonBackButton,
   IonButton,
   IonIcon,
+  IonNote,
   IonButtons,
   IonContent,
   IonHeader,
@@ -19,25 +20,51 @@ import {
   IonDatetime,
   useIonViewWillEnter
 } from '@ionic/react';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps, Router } from 'react-router';
+import {NavContext} from '@ionic/react'
 import './UpdateSchedule.css';
+import ScheduleListItem from '../components/ScheduleListItem';
 
 interface UpdateScheduleProps extends RouteComponentProps<{ id: string; }> { }
 
-const ViewSchedule: React.FC<UpdateScheduleProps> = ({ match }) => {
+const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ match }) => {
 
   const [schedule, setSchedule] = useState<Schedule>();
-  const [startTime, setStartTime] = useState<string>();
-  const [endTime, setEndTime] = useState<string>();
-  const [enabled, setEnabled] = useState<boolean>();
-  const [deviceId, setDeviceId] = useState<number>();
+  const {goBack} = useContext(NavContext);
   
   useIonViewWillEnter(() => {
-    const schd = getSchedule(parseInt(match.params.id, 10));
-    setSchedule(schd);
+    let scheduleId = parseInt(match.params.id, 10)
+    if (isNaN(scheduleId)) {
+      setSchedule({
+        startSchedule: '08:00:00',
+        endSchedule: '18:00:00',
+        enableSchedule: true,
+        manualSchedule: true,
+        lastState: 0,
+        deviceId: 1,
+        id: -1
+      });
+    }
+    else {
+      getSchedule(parseInt(match.params.id, 10)).then((schd) => {
+        setSchedule(schd);
+      });
+    }
   });
 
+  const handleSubmit = (e: FormEvent<HTMLFormElement>, schedule: Schedule) => {
+    e.preventDefault();
+    let scheduleId = parseInt(match.params.id, 10);
+    if (isNaN(scheduleId)) {
+      createSchedule(schedule);
+    } else {
+      updateSchedule(scheduleId, schedule);
+    }
+    goBack("/home");
+  }
+
   return (
+
     <IonPage id="view-schedule-page">
       <IonHeader translucent>
         <IonToolbar>
@@ -49,22 +76,23 @@ const ViewSchedule: React.FC<UpdateScheduleProps> = ({ match }) => {
 
       <IonContent fullscreen>
         {schedule ? (
+          <form className="ion-padding" onSubmit={e => handleSubmit(e, schedule)}>
           <IonList>
             <IonItem>
               <IonLabel>Schedule From</IonLabel>
-              <IonDatetime displayFormat="HH:mm" value={schedule.startSchedule} onIonChange={e => setStartTime(e.detail.value!)}></IonDatetime>
+              <IonDatetime displayFormat="HH:mm" value={schedule.startSchedule} onIonChange={e => setSchedule({...schedule, startSchedule:e.detail.value!})}></IonDatetime>
             </IonItem>
             <IonItem>
               <IonLabel>Schedule To</IonLabel>
-              <IonDatetime displayFormat="HH:mm" value={schedule.endSchedule} onIonChange={e => setEndTime(e.detail.value!)}></IonDatetime>
+              <IonDatetime displayFormat="HH:mm" value={schedule.endSchedule} onIonChange={e => setSchedule({...schedule, endSchedule:e.detail.value!})}></IonDatetime>
             </IonItem>
             <IonItem>
               <IonLabel>Enabled {JSON.stringify(schedule.deviceId)}</IonLabel>
-              <IonToggle checked={schedule.enableSchedule} onIonChange={e => setEnabled(e.detail.checked)} />
+              <IonToggle checked={schedule.enableSchedule} onIonChange={e => setSchedule({...schedule, enableSchedule:e.detail.checked})} />
             </IonItem>
             <IonItem>
               <IonLabel>Device ID</IonLabel>
-              <IonSelect value={String(schedule.deviceId)} placeholder="Select Device ID" onIonChange={e => setDeviceId(parseInt(e.detail.value))}>
+              <IonSelect value={String(schedule.deviceId)} placeholder="Select Device ID" onIonChange={e => setSchedule({...schedule, deviceId: e.detail.value})}>
                 <IonSelectOption value="1">1</IonSelectOption>
                 <IonSelectOption value="2">2</IonSelectOption>
                 <IonSelectOption value="3">3</IonSelectOption>
@@ -83,12 +111,13 @@ const ViewSchedule: React.FC<UpdateScheduleProps> = ({ match }) => {
                 <IonSelectOption value="16">16</IonSelectOption>
               </IonSelect>
             </IonItem>
-            <IonButton expand="block">Save</IonButton>
+            <IonButton type="submit" className="ion-margin-top" expand="block">Save</IonButton>
           </IonList>
-        ) : <div>Schedule not found</div>}
+          </form>
+        ) : <IonNote id="error-message" className="ion-padding" color="danger"><h3>Schedule not found</h3></IonNote>}
       </IonContent>
     </IonPage>
   );
 };
 
-export default ViewSchedule;
+export default UpdateSchedule;

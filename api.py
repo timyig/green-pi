@@ -1,5 +1,7 @@
 from flask import Flask, jsonify, request
-from db import get_schedules, update_schedule, enable_schedule, disabe_schedule, add_schedule, delete_schedule
+from flask_cors import CORS
+from db import get_schedules, get_schedule, update_schedule, enable_schedule, \
+    disabe_schedule, add_schedule, delete_schedule
 from marshmallow import Schema, fields
 import logging
 
@@ -10,10 +12,13 @@ class ScheduleSchema(Schema):
     end_schedule = fields.Time()
     enable_schedule = fields.Bool()
     manual_schedule = fields.Bool()
+    last_state = fields.Int()
     device_id = fields.Int()
 
 
 app = Flask(__name__)
+app.config['CORS_AUTOMATIC_OPTIONS'] = True
+cors = CORS(app)
 
 
 @app.route('/schedules', methods=['GET'])
@@ -40,6 +45,13 @@ def schedules_add():
     return jsonify({"message": "schedule was added successfully"})
 
 
+@app.route('/schedules/<int:schedule_id>', methods=['GET'])
+def schedule(schedule_id):
+    schema = ScheduleSchema()
+    schedule = get_schedule(schedule_id)
+    return jsonify(schema.dump(schedule))
+
+
 @app.route('/schedules/<int:schedule_id>', methods=['PUT'])
 def schedule_update(schedule_id):
     try:
@@ -51,6 +63,7 @@ def schedule_update(schedule_id):
         schedule_id,
         start_schedule=data.get('start_schedule'),
         end_schedule=data.get('end_schedule'),
+        enabled=int(data.get('enable_schedule')),
         device_id=data.get('device_id')
     )
 

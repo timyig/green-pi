@@ -13,10 +13,9 @@ services:
       - db
     volumes:
       - grafana_data:/var/lib/grafana
-<<<<<<< HEAD
     depends_on:
       - db
-=======
+
   green-pi-frontend:
     image: tigit/green-pi:master
     working_dir: /usr/src/app/green-pi-frontend
@@ -32,7 +31,6 @@ services:
       - .:/usr/src/app
     ports:
       - 80:8100
->>>>>>> 6780798a0729dd0870b1432f2dba649d003bd3ec
   green-pi-api:
     image: tigit/green-pi:master
     networks:

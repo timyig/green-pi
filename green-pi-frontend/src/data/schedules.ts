@@ -9,7 +9,7 @@ export interface Schedule {
 }
 
 export const getSchedules = () => {
-  return fetch(`${process.env.GREEN_PI_BACKEND_HOST}/schedules`)
+  return fetch(`${process.env.REACT_APP_GREEN_PI_BACKEND_HOST}/schedules`)
   .then((response) => response.json())
   .then((data) => {
     Object.keys(data).map((key) => {
@@ -37,7 +37,7 @@ export const getSchedules = () => {
 };
 
 export const getSchedule = (id: number) => {
-  return fetch(`${process.env.GREEN_PI_BACKEND_HOST}/schedules/${id}`)
+  return fetch(`${process.env.REACT_APP_GREEN_PI_BACKEND_HOST}/schedules/${id}`)
   .then((response) => response.json())
   .then((data) => {
     data.startSchedule = data.start_schedule;
@@ -60,7 +60,7 @@ export const getSchedule = (id: number) => {
 };
 
 export const deleteSchedule = (id: number) => {
-  return fetch(`${process.env.GREEN_PI_BACKEND_HOST}/schedules/${id}`, {
+  return fetch(`${process.env.REACT_APP_GREEN_PI_BACKEND_HOST}/schedules/${id}`, {
     method: 'DELETE'
   }).then(response => response.json())
   .catch((error) => {
@@ -69,7 +69,7 @@ export const deleteSchedule = (id: number) => {
 }
 
 export const enableSchedule = (id: number) => {
-  return fetch(`${process.env.GREEN_PI_BACKEND_HOST}/schedules/${id}`, {
+  return fetch(`${process.env.REACT_APP_GREEN_PI_BACKEND_HOST}/schedules/${id}`, {
     method: 'PUT',
     body: JSON.stringify({
       "enable_schedule": true
@@ -85,7 +85,7 @@ export const enableSchedule = (id: number) => {
 }
 
 export const disableSchedule = (id: number) => {
-  return fetch(`${process.env.GREEN_PI_BACKEND_HOST}/schedules/${id}`, {
+  return fetch(`${process.env.REACT_APP_GREEN_PI_BACKEND_HOST}/schedules/${id}`, {
     method: 'PUT',
     body: JSON.stringify({
       "enable_schedule": false
@@ -101,7 +101,7 @@ export const disableSchedule = (id: number) => {
 }
 
 export const updateSchedule = (id: number, data: Schedule) => {
-  return fetch(`${process.env.GREEN_PI_BACKEND_HOST}/schedules/${id}`, {
+  return fetch(`${process.env.REACT_APP_GREEN_PI_BACKEND_HOST}/schedules/${id}`, {
     method: 'PUT',
     body: JSON.stringify({
       "start_schedule": data.startSchedule,
@@ -120,7 +120,7 @@ export const updateSchedule = (id: number, data: Schedule) => {
 }
 
 export const createSchedule = (data: Schedule) => {
-  return fetch(`${process.env.GREEN_PI_BACKEND_HOST}/schedules`, {
+  return fetch(`${process.env.REACT_APP_GREEN_PI_BACKEND_HOST}/schedules`, {
     method: 'POST',
     body: JSON.stringify({
       "start_schedule": data.startSchedule,

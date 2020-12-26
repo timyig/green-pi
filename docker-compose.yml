@@ -21,8 +21,8 @@ services:
     links:
       - green-pi-api
     environment:
-      # GREEN_PI_BACKEND_HOST: http://greenpi:8000
-      GREEN_PI_BACKEND_HOST: http://localhost:8000
+      # REACT_APP_GREEN_PI_BACKEND_HOST: http://greenpi:8000
+      REACT_APP_GREEN_PI_BACKEND_HOST: http://localhost:8000
     command: ionic serve
     volumes:
       - .:/usr/src/app

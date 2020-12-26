@@ -8,4 +8,12 @@ Raspberry Pi - Caretaker for plants
 
 ## Running on rpi
 
-`docker-compose -f docker-compose.rpi.yml -d run`
+`docker-compose -f docker-compose.yml -d run`
+
+## Accesing Grafana
+[Dashboard](green-pi:3000)
+
+### Initalizing Grafan image
+[Tutorial](https://ops.tips/blog/initialize-grafana-with-preconfigured-dashboards/)
+
+

@@ -13,6 +13,8 @@ services:
       - db
     volumes:
       - grafana_data:/var/lib/grafana
+    depends_on:
+      - db
   green-pi-api:
     image: tigit/green-pi:master
     networks:
@@ -62,4 +64,3 @@ volumes:
     driver: local
   db_data:
     driver: local
-

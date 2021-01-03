@@ -110,7 +110,8 @@ def scheduleJob():
 
     for e in events:
         state = OFF
-
+        logging.debug('Processing event with Start time {start} and Endtime {end}'.format(
+            start=e.start_schedule, end=e.end_schedule))
         if current_time > e.start_schedule and current_time <= e.end_schedule:
             logging.debug("Setting relay state to ON for: %d", e.device_id)
             state = ON
@@ -118,9 +119,11 @@ def scheduleJob():
             logging.debug("Setting relay state to OFF for: %d", e.device_id)
             state = OFF
         if state != e.last_state:
-            os.system('python pyt-8-Way-Relay-Board/k8_box.py set-relay -r {relay} -s {state}'.format(relay=e.device_id, state=state))
+            os.system('python pyt-8-Way-Relay-Board/k8_box.py set-relay -r {relay} -s {state}'.format(
+                relay=e.device_id, state=state))
             logging.debug("Setting relay %d to %d", e.device_id, state)
             update_schedule(e.id, device_id=e.device_id, last_state=state)
+
 
 schedule.every(1).minutes.do(getGrowData)
 schedule.every(1).seconds.do(scheduleJob)

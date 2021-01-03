@@ -130,3 +130,6 @@ dmypy.json
 
 # Grafana
 /grafana
+
+# Mac OS
+.DS_Store

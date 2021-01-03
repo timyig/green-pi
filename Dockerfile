@@ -1,5 +1,6 @@
 FROM arm32v7/python:3.8-buster
 
+RUN ln -sf /usr/share/zoneinfo/CET /etc/localtime
 WORKDIR /usr/src/app
 
 # Install Python dependecies

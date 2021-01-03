@@ -1,3 +1,7 @@
+![Docker Build/Publish Image](https://github.com/t-xigit/green-pi/workflows/Docker%20Build/Publish%20Image/badge.svg)
+
+![Check formating](https://github.com/t-xigit/green-pi/workflows/Check%20formating/badge.svg)
+
 # green-pi
 Raspberry Pi - Caretaker for plants
 

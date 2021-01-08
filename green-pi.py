@@ -30,6 +30,7 @@ relay_script_path = os.environ.get("/pyt-8-Way-Relay-Board/k8_box.py")
 
 OFF = 0
 ON = 1
+TEMP_SENSOR_GPIO = 2
 
 '''
 def job():
@@ -46,12 +47,13 @@ def fetchSensorGPIO():
     logging.info("fetchSensorGPIO")
     # Format GPIO data for export
     data = {}
-    data['climate_GPIO'] = 2
+    data['climate_GPIO'] = TEMP_SENSOR_GPIO
     return data
 
 
 def getGrowData():
-
+    logging.debug("getGrowData")
+    # TODO fetch Sensor GPIO only needs to be called once
     GPIO = fetchSensorGPIO()
 
     data = {}
@@ -61,11 +63,11 @@ def getGrowData():
     '''
     data['moisture_status'] = getGPIOState(GPIO['moisture_GPIO'])
     '''
-    growDataUpdate(data)
     return data
 
 
 def growDataUpdate(data):
+    getGrowData()
     logging.info("Update DB")
     add_sensor_data({
         'air_temp': data['temperature'],
@@ -83,7 +85,7 @@ def fetchRawTemperature(gpioPIN):
             logging.info(data_output)
             return data_output
         else:
-            logging.info('Failed to get reading. Try again!')
+            logging.info('Failed to get temperature reading. Try again!')
     except Exception:
         logging.error("sensor error: ", exc_info=True)
 
@@ -98,7 +100,7 @@ def fetchRawHumidity(gpioPIN):
             logging.info(data_output)
             return data_output
         else:
-            logging.info('Failed to get reading. Try again!')
+            logging.info('Failed to get humidity reading. Try again!')
     except Exception:
         logging.error("sensor error: ", exc_info=True)
 
@@ -125,7 +127,7 @@ def scheduleJob():
             update_schedule(e.id, device_id=e.device_id, last_state=state)
 
 
-schedule.every(1).minutes.do(getGrowData)
+schedule.every(1).minutes.do(growDataUpdate)
 schedule.every(1).seconds.do(scheduleJob)
 
 

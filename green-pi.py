@@ -13,8 +13,6 @@ from flask import Flask
 from relay import set_relay, ON, OFF
 
 
-logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.DEBUG)
-
 try:
     import Adafruit_DHT as dht
 except BaseException:

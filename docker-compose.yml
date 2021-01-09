@@ -25,7 +25,7 @@ services:
     environment:
       REACT_APP_GREEN_PI_BACKEND_HOST: http://greenpi:8000
       # REACT_APP_GREEN_PI_BACKEND_HOST: http://localhost:8000
-    command: ionic serve
+    command: serve -s -l 8100 build
     volumes:
       - frontend_build:/usr/src/app/green-pi-frontend/build
     ports:

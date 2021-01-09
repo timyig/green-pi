@@ -20,7 +20,7 @@ RUN wget https://nodejs.org/dist/v10.16.1/node-v10.16.1-linux-armv7l.tar.xz && \
     cp -R * /usr/local/ && \
     npm config set unsafe-perm true
 
-RUN npm install -g @ionic/cli
+RUN npm install -g @ionic/cli -g serve
 
 COPY . ./
 RUN cd green-pi-frontend/ && npm install && cp .env.pi .env && ionic build

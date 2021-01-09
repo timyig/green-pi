@@ -14,6 +14,11 @@ Raspberry Pi - Caretaker for plants
 
 `docker-compose -f docker-compose.yml -d run`
 
+## Testing on the Pi without DB feature
+
+You have to set the env MY_ENV to TEST.  
+`export MY_ENV=TEST`
+
 ## Accesing Grafana
 [Dashboard](green-pi:3000)
 

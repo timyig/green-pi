@@ -105,7 +105,7 @@ def getGrowData():
     return data
 
 
-def growDataUpdate(data):
+def growDataUpdate():
     logging.info("Update DB")
     data = getGrowData()
     add_sensor_data({

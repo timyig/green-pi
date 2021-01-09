@@ -59,7 +59,7 @@ def updateSensorData():
     logging.info("Update DB")
     data = fetch_sensors()
     add_sensor_data({
-        'temperature': data['temperature'],
+        'air_temp': data['temperature'],
         'humidity': data['humidity'],
         'moister': data['humidity'],
     })

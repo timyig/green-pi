@@ -23,6 +23,6 @@ RUN wget https://nodejs.org/dist/v10.16.1/node-v10.16.1-linux-armv7l.tar.xz && \
 RUN npm install -g @ionic/cli
 
 COPY . ./
-RUN cd green-pi-frontend/ && npm install
+RUN cd green-pi-frontend/ && npm install && cp .env.pi .env && ionic build
 
-CMD [ "python", "./green-pi.py" ]
+RUN chmod +x run_api.sh

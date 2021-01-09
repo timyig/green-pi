@@ -4,6 +4,7 @@ import { Schedule, getSchedule, updateSchedule, createSchedule } from '../data/s
 import {
   IonBackButton,
   IonButton,
+  IonInput,
   IonIcon,
   IonNote,
   IonButtons,
@@ -15,11 +16,13 @@ import {
   IonToolbar,
   IonList,
   IonToggle,
+  IonRange,
   IonSelect,
   IonSelectOption,
   IonDatetime,
   useIonViewWillEnter
 } from '@ionic/react';
+import { thermometer } from 'ionicons/icons';
 import { RouteComponentProps, Router } from 'react-router';
 import {NavContext} from '@ionic/react'
 import './UpdateSchedule.css';
@@ -42,7 +45,8 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ match }) => {
         manualSchedule: true,
         lastState: 0,
         deviceId: 1,
-        id: -1
+        id: -1,
+        sensor: "",
       });
     }
     else {
@@ -61,6 +65,10 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ match }) => {
       updateSchedule(scheduleId, schedule);
     }
     goBack("/home");
+  }
+
+  const handleSensorChange = (e: CustomEvent, schedule: Schedule) => {
+    setSchedule({...schedule, sensor: e.detail.value || ""});
   }
 
   return (
@@ -93,6 +101,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ match }) => {
             <IonItem>
               <IonLabel>Device ID</IonLabel>
               <IonSelect value={String(schedule.deviceId)} placeholder="Select Device ID" onIonChange={e => setSchedule({...schedule, deviceId: e.detail.value})}>
+                <IonSelectOption value="0">0</IonSelectOption>
                 <IonSelectOption value="1">1</IonSelectOption>
                 <IonSelectOption value="2">2</IonSelectOption>
                 <IonSelectOption value="3">3</IonSelectOption>
@@ -100,16 +109,29 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ match }) => {
                 <IonSelectOption value="5">5</IonSelectOption>
                 <IonSelectOption value="6">6</IonSelectOption>
                 <IonSelectOption value="7">7</IonSelectOption>
-                <IonSelectOption value="8">8</IonSelectOption>
-                <IonSelectOption value="9">9</IonSelectOption>
-                <IonSelectOption value="10">10</IonSelectOption>
-                <IonSelectOption value="11">11</IonSelectOption>
-                <IonSelectOption value="12">12</IonSelectOption>
-                <IonSelectOption value="13">13</IonSelectOption>
-                <IonSelectOption value="14">14</IonSelectOption>
-                <IonSelectOption value="15">15</IonSelectOption>
-                <IonSelectOption value="16">16</IonSelectOption>
               </IonSelect>
+            </IonItem>
+            <IonItem>
+              <IonLabel>Sensor</IonLabel>
+              <IonSelect value={String(schedule.sensor? schedule.sensor : "")} placeholder="Select Sensor" onIonChange={e => handleSensorChange(e, schedule)}>
+                <IonSelectOption value="">No Sensor</IonSelectOption>
+                <IonSelectOption value="temperature">Temperature</IonSelectOption>
+                <IonSelectOption value="humidity">Humidity</IonSelectOption>
+              </IonSelect>
+            </IonItem>
+            <IonItem>
+            <IonLabel>Sensor Min {schedule.sensorMin}</IonLabel>
+              <IonRange disabled={!schedule.sensor} min={-20} max={50} step={0.5} pin value={schedule.sensorMin} onIonChange={e => setSchedule({...schedule, sensorMin: Number(e.detail.value)})}>
+                <IonIcon size="small" slot="start" icon={thermometer} color="danger" />
+                <IonIcon slot="end" color="danger" icon={thermometer} />
+              </IonRange>
+            </IonItem>
+            <IonItem>
+              <IonLabel>Sensor Max {schedule.sensorMax}</IonLabel>
+              <IonRange disabled={!schedule.sensor} min={-20} max={50} step={0.5} pin value={schedule.sensorMax} onIonChange={e => setSchedule({...schedule, sensorMax: Number(e.detail.value)})}>
+                <IonIcon size="small" slot="start" icon={thermometer} color="danger" />
+                <IonIcon slot="end" color="danger" icon={thermometer} />
+              </IonRange>
             </IonItem>
             <IonButton type="submit" className="ion-margin-top" expand="block">Save</IonButton>
           </IonList>

@@ -1,7 +1,4 @@
 #!/usr/bin/env python3
-"""
-Module Docstring
-"""
 
 import os
 import logging
@@ -11,13 +8,10 @@ from datetime import datetime
 from time import strftime
 import random
 
-from db import add_sensor_data
-from db import get_schedules
-from db import update_schedule
+from db import db, add_sensor_data, get_schedules, update_schedule, SensorEnum
+from flask import Flask
+from relay import set_relay, ON, OFF
 
-__author__ = "Timur Yigit"
-__version__ = "0.1.0"
-__license__ = "MIT"
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.DEBUG)
 
@@ -28,107 +22,97 @@ except BaseException:
 
 relay_script_path = os.environ.get("/pyt-8-Way-Relay-Board/k8_box.py")
 
-OFF = 0
-ON = 1
 
-'''
-def job():
-    add_sensor_data({
-        'air_temp': round(random.uniform(1.0, 100.0), 2),
-        'humidity': round(random.uniform(1.0, 100.0), 2),
-        'moister': round(random.uniform(1.0, 100.0), 2)})
-'''
+CLIMATE_GPIO = 2
 
-
-# Get list all sensor GPIO pins stored in DB
-def fetchSensorGPIO():
-
-    logging.info("fetchSensorGPIO")
-    # Format GPIO data for export
-    data = {}
-    data['climate_GPIO'] = 2
-    return data
-
-
-def getGrowData():
-
-    GPIO = fetchSensorGPIO()
-
-    data = {}
-    data['timestamp'] = strftime("%Y-%m-%d %H:%M:%S")
-    data['temperature'] = fetchRawTemperature(GPIO['climate_GPIO'])
-    data['humidity'] = fetchRawHumidity(GPIO['climate_GPIO'])
-    '''
-    data['moisture_status'] = getGPIOState(GPIO['moisture_GPIO'])
-    '''
-    growDataUpdate(data)
-    return data
-
-
-def growDataUpdate(data):
-    logging.info("Update DB")
-    add_sensor_data({
-        'air_temp': data['temperature'],
-        'humidity': data['humidity'],
-        'moister': round(random.uniform(1.0, 100.0), 2)})
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('GREEN_PI_DB_CONNECTION')
+db.init_app(app)
 
 
 # Fetch Raw Temperature
-def fetchRawTemperature(gpioPIN):
+def fetch_temperature_and_humidity(gpioPIN):
     try:
         humidity, temperature = dht.read_retry(dht.DHT22, int(gpioPIN))
-
         if temperature is not None:
-            data_output = round(temperature, 2)
-            logging.info(data_output)
-            return data_output
-        else:
-            logging.info('Failed to get reading. Try again!')
+            temperature = round(temperature, 2)
+        if humidity is not None:
+            humidity = round(humidity, 2)
+        if humidity is None or temperature is None:
+            logging.error('Failed to get reading. Try again!')
+        return humidity, temperature
     except Exception:
         logging.error("sensor error: ", exc_info=True)
+        return None, None
 
 
-# Fetch Raw Humidity
-def fetchRawHumidity(gpioPIN):
-    try:
-        humidity, temperature = dht.read_retry(dht.DHT22, int(gpioPIN))
+def fetch_sensors():
+    humidity, temperature = fetch_temperature_and_humidity(CLIMATE_GPIO)
+    return {
+        'timestamp': strftime("%Y-%m-%d %H:%M:%S"),
+        'temperature': temperature,
+        # 'moister': getGPIOState(MOISTURE_GPIO),
+        'moister': round(random.uniform(1.0, 100.0), 2),
+        'humidity': humidity
+    }
 
-        if humidity is not None and humidity <= 100:
-            data_output = round(humidity, 2)
-            logging.info(data_output)
-            return data_output
-        else:
-            logging.info('Failed to get reading. Try again!')
-    except Exception:
-        logging.error("sensor error: ", exc_info=True)
+
+def updateSensorData():
+    logging.info("Update DB")
+    data = fetch_sensors()
+    add_sensor_data(data)
+    return data
+
+
+def get_sensor_state(sensor_value, last_state, sensor_min, sensor_max, inverted=False):
+    lower_state = ON if inverted else OFF
+    upper_state = OFF if inverted else ON
+    if sensor_value < sensor_min and last_state == lower_state:
+        return OFF if inverted else ON
+    elif sensor_value > sensor_max and last_state == upper_state:
+        return ON if inverted else OFF
+
+
+def get_updated_state(schd):
+    current_time = datetime.now().time()
+    time_state = ON if current_time >= schd.start_schedule and current_time < schd.end_schedule else OFF
+    if schd.sensor is None:
+        return time_state
+    sensor_data = fetch_sensors()
+    humidity = sensor_data.get('humidity')
+    temperature = sensor_data.get('temperature')
+    logging.debug('Last sensors reading: temperature {temperature}, humidity {humidity}'.format(
+        temperature=temperature, humidity=humidity))
+    sensor_state = OFF
+    if schd.sensor == SensorEnum.SensorTemperature and temperature is not None:
+        get_sensor_state(temperature, schd.last_state, schd.sensor_min, schd.sensor_max)
+    if schd.sensor == SensorEnum.SensorHumidity and humidity is not None:
+        get_sensor_state(humidity, schd.last_state, schd.sensor_min, schd.sensor_max)
+    return ON if time_state == ON and sensor_state == ON else OFF
 
 
 def scheduleJob():
     logging.debug("scheduleJob")
     events = get_schedules()
-    current_time = datetime.now().time()
-
     for e in events:
-        state = OFF
-        logging.debug('Processing event with Start time {start} and Endtime {end}'.format(
-            start=e.start_schedule, end=e.end_schedule))
-        if current_time > e.start_schedule and current_time <= e.end_schedule:
-            logging.debug("Setting relay state to ON for: %d", e.device_id)
-            state = ON
-        else:
-            logging.debug("Setting relay state to OFF for: %d", e.device_id)
-            state = OFF
+        logging.debug('Processing event with Start time {start} and Endtime {end}, device_id {device_id}, '
+            'Sensor {sensor}, min {sensor_min}, max {sensor_max}'.format(
+                start=e.start_schedule, end=e.end_schedule, device_id=e.device_id, 
+                sensor=e.sensor, sensor_min=e.sensor_min, sensor_max=e.sensor_max))
+        state = get_updated_state(e)
+        logging.debug('State should be {state}'.format(state='ON' if state == ON else 'OFF'))
         if state != e.last_state:
-            os.system('python pyt-8-Way-Relay-Board/k8_box.py set-relay -r {relay} -s {state}'.format(
-                relay=e.device_id, state=state))
-            logging.debug("Setting relay %d to %d", e.device_id, state)
+            logging.debug("Setting relay state to %s for: %d", 'ON' if state == ON else 'OFF', e.device_id)
+            set_relay(e.device_id, state)
             update_schedule(e.id, device_id=e.device_id, last_state=state)
 
 
-schedule.every(1).minutes.do(getGrowData)
+schedule.every(1).minutes.do(updateSensorData)
 schedule.every(1).seconds.do(scheduleJob)
 
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+@app.cli.command("run-scheduler")
+def run_scheduler():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)

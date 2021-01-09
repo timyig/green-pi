@@ -37,6 +37,13 @@ const ScheduleListItem: React.FC<ScheduleListItemProps> = ({ schedule, onItemDel
         <p>Device ID: <b>{schedule.deviceId}</b></p>
         <p>Manual Schedule: <b>{String(schedule.manualSchedule)}</b></p>
         <p>Last State: <b>{schedule.lastState}</b></p>
+        <p>
+          Sensor: <b>{schedule.sensor || "No Sensor"}</b>
+          <span> </span>
+          Between <b>{schedule.sensorMin}</b>
+          <span> </span>
+          and <b>{schedule.sensorMax}</b>
+        </p>
       </IonLabel>
       <IonButton href={"/schedule/" + schedule.id} slot="end" size="default" color="secondary">
         <IonIcon icon={createOutline} />

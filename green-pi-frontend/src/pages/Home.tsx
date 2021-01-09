@@ -34,7 +34,7 @@ const Home: React.FC = () => {
   };
 
   const handleDelete = (e: CustomEvent, id: number) => {
-    setSchedules(schedules.filter(elem => elem.id != id));
+    setSchedules(schedules.filter(elem => elem.id !== id));
   }
 
   return (

@@ -106,8 +106,8 @@ def getGrowData():
 
 
 def growDataUpdate(data):
-    getGrowData()
     logging.info("Update DB")
+    data = getGrowData()
     add_sensor_data({
         'air_temp': data['temperature'],
         'humidity': data['humidity'],

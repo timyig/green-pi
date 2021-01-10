@@ -8,8 +8,8 @@ from datetime import datetime
 from time import strftime
 import random
 
-from db import add_sensor_data, get_schedules, update_schedule, SensorEnum
-from relay import set_relay, ON, OFF
+from db import add_sensor_data, get_schedules, SensorEnum
+from relay import update_relay, ON, OFF
 from app import create_app
 
 
@@ -108,9 +108,7 @@ def scheduleJob():
             state = get_updated_state(e)
             logging.debug('State should be {state}'.format(state='ON' if state == ON else 'OFF'))
             if state != e.last_state:
-                logging.debug("Setting relay state to %s for: %d", 'ON' if state == ON else 'OFF', e.device_id)
-                set_relay(e.device_id, state)
-                update_schedule(e.id, device_id=e.device_id, last_state=state)
+                update_relay(e.id, e.device_id, state)
     except BaseException:
         logging.error("scheduleJob error: ", exc_info=True)
 

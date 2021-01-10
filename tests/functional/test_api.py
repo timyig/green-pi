@@ -1,6 +1,7 @@
 from datetime import time
 from http import HTTPStatus
 from db import ScheduleData, SensorEnum
+from relay import ON, OFF
 
 
 def test_add_schedule(client, db):
@@ -46,6 +47,12 @@ def test_delete_schedule(client, db):
     assert HTTPStatus.OK.value == rv.status_code
 
 
+def test_delete_schedule_with_switching_off_relay(client, db):
+    db_schedule = ScheduleData.query.filter(ScheduleData.last_state == ON).first()
+    rv = client.delete('/schedules/{id}'.format(id=db_schedule.id))
+    assert HTTPStatus.OK.value == rv.status_code
+
+
 def test_update_schedule(client, db):
     db_schedule = ScheduleData.query.first()
     rv = client.put('/schedules/{id}'.format(id=db_schedule.id), json={
@@ -58,7 +65,7 @@ def test_update_schedule(client, db):
         'sensor_max': 18.5
     })
     assert HTTPStatus.OK.value == rv.status_code
-    db_schedule = ScheduleData.query.first()
+    db_schedule = ScheduleData.query.get(db_schedule.id)
     assert db_schedule.start_schedule == time(1, 1, 1)
     assert db_schedule.end_schedule == time(18, 18, 18)
     assert db_schedule.enable_schedule == 0
@@ -78,3 +85,11 @@ def test_disable_schedule(client, db):
     db_schedule = ScheduleData.query.first()
     rv = client.put('/schedules/{id}/disable'.format(id=db_schedule.id))
     assert HTTPStatus.OK.value == rv.status_code
+
+
+def test_disable_schedule_with_switching_off_relay(client, db):
+    db_schedule = ScheduleData.query.filter(ScheduleData.last_state == ON).first()
+    rv = client.put('/schedules/{id}/disable'.format(id=db_schedule.id))
+    assert HTTPStatus.OK.value == rv.status_code
+    db_schedule = ScheduleData.query.get(db_schedule.id)
+    assert db_schedule.last_state == OFF

@@ -4,7 +4,7 @@ from db import get_schedules, get_schedule, update_schedule, enable_schedule, \
 from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
 import logging
-from relay import set_relay, OFF
+from relay import update_relay, OFF
 
 
 class ScheduleSchema(Schema):
@@ -68,7 +68,7 @@ def schedule_update(schedule_id):
     schedule = get_schedule(schedule_id)
     if schedule is not None and data.get('enable_schedule') is False and \
             schedule.enable_schedule is True:
-        set_relay(schedule.device_id, OFF)
+        update_relay(schedule.id, schedule.device_id, OFF)
     update_schedule(
         schedule_id,
         start_schedule=data.get('start_schedule'),
@@ -87,7 +87,7 @@ def schedule_update(schedule_id):
 def schedule_delete(schedule_id):
     schedule = get_schedule(schedule_id)
     if schedule is not None:
-        set_relay(schedule.device_id, OFF)
+        update_relay(schedule.id, schedule.device_id, OFF)
     delete_schedule(schedule_id)
     return jsonify({"message": "schedule was deleted successfully"})
 
@@ -102,6 +102,6 @@ def schedule_enable(schedule_id):
 def schedule_disable(schedule_id):
     schedule = get_schedule(schedule_id)
     if schedule is not None:
-        set_relay(schedule.device_id, OFF)
+        update_relay(schedule.id, schedule.device_id, OFF)
     disabe_schedule(schedule_id)
     return jsonify({"message": "schedule was disabled successfully"})

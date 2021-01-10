@@ -67,7 +67,7 @@ def add_schedule(start_schedule, end_schedule, enabled, device_id, sensor=None, 
     db.session.commit()
 
 
-def update_schedule(schedule_id, start_schedule=None, end_schedule=None, enabled=True, device_id=None, last_state=None, 
+def update_schedule(schedule_id, start_schedule=None, end_schedule=None, enabled=None, device_id=None, last_state=None, 
                     sensor=missing, sensor_min=missing, sensor_max=missing):
     schedule = ScheduleData.query.get(schedule_id)
     if schedule is None:

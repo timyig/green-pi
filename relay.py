@@ -1,4 +1,4 @@
-import os
+import subprocess
 import logging
 
 from db import update_schedule
@@ -11,8 +11,11 @@ ON = 1
 
 
 def set_relay(device_id, state):
-    os.system('python pyt-8-Way-Relay-Board/k8_box.py set-relay -r {relay} -s {state}'.format(
-        relay=device_id, state=state))
+    try:
+        subprocess.run('python pyt-8-Way-Relay-Board/k8_box.py set-relay -r {relay} -s {state}'.format(
+            relay=device_id, state=state))
+    except BaseException:
+        logging.error('Error setting relay:', exc_info=True)
     logging.debug("Setting relay %d to %d", device_id, state)
 
 

@@ -70,10 +70,12 @@ def updateSensorData():
 def get_sensor_state(sensor_value, last_state, sensor_min, sensor_max, inverted=False):
     lower_state = ON if inverted else OFF
     upper_state = OFF if inverted else ON
-    if sensor_value < sensor_min and last_state == lower_state:
+    if sensor_value <= sensor_min and last_state == lower_state:
         return OFF if inverted else ON
-    elif sensor_value > sensor_max and last_state == upper_state:
+    elif sensor_value >= sensor_max and last_state == upper_state:
         return ON if inverted else OFF
+    else:
+        return last_state
 
 
 def get_updated_state(schd):

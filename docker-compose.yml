@@ -54,11 +54,10 @@ services:
     #   - .:/usr/src/app
     environment:
       GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
-      FLASK_APP: green-pi
+      FLASK_APP: green_pi
     command: flask run-scheduler
     privileged: true
     devices:
-      - /dev/gpiomem:/dev/gpiomem
       - /dev/gpiomem:/dev/gpiomem
     depends_on:
       - db

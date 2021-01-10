@@ -8,9 +8,9 @@ from datetime import datetime
 from time import strftime
 import random
 
-from db import db, add_sensor_data, get_schedules, update_schedule, SensorEnum
-from flask import Flask
+from db import add_sensor_data, get_schedules, update_schedule, SensorEnum
 from relay import set_relay, ON, OFF
+from app import create_app
 
 
 try:
@@ -23,9 +23,7 @@ relay_script_path = os.environ.get("/pyt-8-Way-Relay-Board/k8_box.py")
 
 CLIMATE_GPIO = 2
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('GREEN_PI_DB_CONNECTION')
-db.init_app(app)
+app = create_app()
 
 
 # Fetch Raw Temperature

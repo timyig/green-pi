@@ -1,8 +1,5 @@
-import os
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-from flask_migrate import Migrate
-from db import db, get_schedules, get_schedule, update_schedule, enable_schedule, \
+from flask import jsonify, request, Blueprint
+from db import get_schedules, get_schedule, update_schedule, enable_schedule, \
     disabe_schedule, add_schedule, delete_schedule, SensorEnum
 from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
@@ -23,22 +20,17 @@ class ScheduleSchema(Schema):
     sensor_max = fields.Float(required=False)
 
 
-app = Flask(__name__)
-app.config['CORS_AUTOMATIC_OPTIONS'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('GREEN_PI_DB_CONNECTION')
-cors = CORS(app)
-db.init_app(app)
-migrate = Migrate(app, db)
+schedules_bp = Blueprint('schedules', 'schedules')
 
 
-@app.route('/schedules', methods=['GET'])
+@schedules_bp.route('/schedules', methods=['GET'])
 def schedules():
     schema = ScheduleSchema(many=True)
     schedules = get_schedules(True)
     return jsonify(schema.dump(schedules))
 
 
-@app.route('/schedules', methods=['POST'])
+@schedules_bp.route('/schedules', methods=['POST'])
 def schedules_add():
     try:
         data = request.get_json()
@@ -58,14 +50,14 @@ def schedules_add():
     return jsonify({"message": "schedule was added successfully"})
 
 
-@app.route('/schedules/<int:schedule_id>', methods=['GET'])
+@schedules_bp.route('/schedules/<int:schedule_id>', methods=['GET'])
 def schedule(schedule_id):
     schema = ScheduleSchema()
     schedule = get_schedule(schedule_id)
     return jsonify(schema.dump(schedule))
 
 
-@app.route('/schedules/<int:schedule_id>', methods=['PUT'])
+@schedules_bp.route('/schedules/<int:schedule_id>', methods=['PUT'])
 def schedule_update(schedule_id):
     try:
         data = request.get_json()
@@ -91,7 +83,7 @@ def schedule_update(schedule_id):
     return jsonify({"message": "schedule was updated successfully"})
 
 
-@app.route('/schedules/<int:schedule_id>', methods=['DELETE'])
+@schedules_bp.route('/schedules/<int:schedule_id>', methods=['DELETE'])
 def schedule_delete(schedule_id):
     schedule = get_schedule(schedule_id)
     if schedule is not None:
@@ -100,13 +92,13 @@ def schedule_delete(schedule_id):
     return jsonify({"message": "schedule was deleted successfully"})
 
 
-@app.route('/schedules/<int:schedule_id>/enable', methods=['PUT'])
+@schedules_bp.route('/schedules/<int:schedule_id>/enable', methods=['PUT'])
 def schedule_enable(schedule_id):
     enable_schedule(schedule_id)
     return jsonify({"message": "schedule was enabled successfully"})
 
 
-@app.route('/schedules/<int:schedule_id>/disable', methods=['PUT'])
+@schedules_bp.route('/schedules/<int:schedule_id>/disable', methods=['PUT'])
 def schedule_disable(schedule_id):
     schedule = get_schedule(schedule_id)
     if schedule is not None:

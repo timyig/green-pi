@@ -13,10 +13,13 @@ from relay import update_relay, ON, OFF
 from app import create_app
 
 
+logger = logging.getLogger(__file__)
+
+
 try:
     import Adafruit_DHT as dht
 except BaseException:
-    logging.error('Was not able to import Adafruit_DHT')
+    logger.error('Was not able to import Adafruit_DHT')
 
 relay_script_path = os.environ.get("/pyt-8-Way-Relay-Board/k8_box.py")
 
@@ -35,10 +38,10 @@ def fetch_temperature_and_humidity(gpioPIN):
         if humidity is not None:
             humidity = round(humidity, 2)
         if humidity is None or temperature is None:
-            logging.error('Failed to get reading. Try again!')
+            logger.error('Failed to get reading. Try again!')
         return humidity, temperature
     except Exception:
-        logging.error("sensor error: ", exc_info=True)
+        logger.error("sensor error: ", exc_info=True)
         return None, None
 
 
@@ -55,7 +58,7 @@ def fetch_sensors():
 
 def updateSensorData():
     try:
-        logging.info("Update DB")
+        logger.info("Update DB")
         data = fetch_sensors()
         add_sensor_data({
             'air_temp': data['temperature'],
@@ -64,7 +67,7 @@ def updateSensorData():
         })
         return data
     except BaseException:
-        logging.error("updateSensorData error: ", exc_info=True)
+        logger.error("updateSensorData error: ", exc_info=True)
 
 
 def get_sensor_state(sensor_value, last_state, sensor_min, sensor_max, inverted=False):
@@ -86,7 +89,7 @@ def get_updated_state(schd):
     sensor_data = fetch_sensors()
     humidity = sensor_data.get('humidity')
     temperature = sensor_data.get('temperature')
-    logging.debug('Last sensors reading: temperature {temperature}, humidity {humidity}'.format(
+    logger.debug('Last sensors reading: temperature {temperature}, humidity {humidity}'.format(
         temperature=temperature, humidity=humidity))
     sensor_state = OFF
     if schd.sensor == SensorEnum.SensorTemperature and temperature is not None:
@@ -98,19 +101,19 @@ def get_updated_state(schd):
 
 def scheduleJob():
     try:
-        logging.debug("scheduleJob")
+        logger.debug("scheduleJob")
         events = get_schedules()
         for e in events:
-            logging.debug('Processing event with Start time {start} and Endtime {end}, device_id {device_id}, '
+            logger.debug('Processing event with Start time {start} and Endtime {end}, device_id {device_id}, '
                 'Sensor {sensor}, min {sensor_min}, max {sensor_max}'.format(
                     start=e.start_schedule, end=e.end_schedule, device_id=e.device_id, 
                     sensor=e.sensor, sensor_min=e.sensor_min, sensor_max=e.sensor_max))
             state = get_updated_state(e)
-            logging.debug('State should be {state}'.format(state='ON' if state == ON else 'OFF'))
+            logger.debug('State should be {state}'.format(state='ON' if state == ON else 'OFF'))
             if state != e.last_state:
                 update_relay(e.id, e.device_id, state)
     except BaseException:
-        logging.error("scheduleJob error: ", exc_info=True)
+        logger.error("scheduleJob error: ", exc_info=True)
 
 
 schedule.every(1).minutes.do(updateSensorData)

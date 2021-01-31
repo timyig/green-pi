@@ -7,6 +7,9 @@ import logging
 from relay import update_relay, OFF
 
 
+logger = logging.getLogger(__file__)
+
+
 class ScheduleSchema(Schema):
     id = fields.Int()
     start_schedule = fields.Time()
@@ -35,7 +38,7 @@ def schedules_add():
     try:
         data = request.get_json()
     except BaseException:
-        logging.error("Error reading the request body")
+        logger.error("Error reading the request body")
         return jsonify({"message": "invalid request"})
     add_schedule(
         start_schedule=data.get('start_schedule'),
@@ -62,7 +65,7 @@ def schedule_update(schedule_id):
     try:
         data = request.get_json()
     except BaseException:
-        logging.error("Error reading the request body")
+        logger.error("Error reading the request body")
         return jsonify({"message": "invalid request"})
 
     schedule = get_schedule(schedule_id)

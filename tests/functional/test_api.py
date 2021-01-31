@@ -53,6 +53,12 @@ def test_delete_schedule_with_switching_off_relay(client, db):
     assert HTTPStatus.OK.value == rv.status_code
 
 
+def test_delete_disabled_schedule_with_switching_off_relay(client, db):
+    db_schedule = ScheduleData.query.filter(ScheduleData.enable_schedule == 0).first()
+    rv = client.delete('/schedules/{id}'.format(id=db_schedule.id))
+    assert HTTPStatus.OK.value == rv.status_code
+
+
 def test_update_schedule(client, db):
     db_schedule = ScheduleData.query.first()
     rv = client.put('/schedules/{id}'.format(id=db_schedule.id), json={

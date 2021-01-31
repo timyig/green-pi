@@ -1,6 +1,10 @@
 import enum
+import logging
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
+
+
+logger = logging.getLogger(__file__)
 
 
 class SensorEnum(enum.Enum):
@@ -53,6 +57,7 @@ def add_sensor_data(data):
 
 def add_schedule(start_schedule, end_schedule, enabled, device_id, sensor=None, sensor_min=None, 
                  sensor_max=None, manual_schedule=0):
+    logger.debug('Adding schedule')
     db.session.add(ScheduleData(
         start_schedule=start_schedule,
         end_schedule=end_schedule,
@@ -69,6 +74,7 @@ def add_schedule(start_schedule, end_schedule, enabled, device_id, sensor=None, 
 
 def update_schedule(schedule_id, start_schedule=None, end_schedule=None, enabled=None, device_id=None, last_state=None, 
                     sensor=missing, sensor_min=missing, sensor_max=missing):
+    logger.debug('Updating schedule {schedule_id}'.format(schedule_id=schedule_id))
     schedule = ScheduleData.query.get(schedule_id)
     if schedule is None:
         raise ScheduleNotFoundException('Schedule not found')
@@ -84,6 +90,7 @@ def update_schedule(schedule_id, start_schedule=None, end_schedule=None, enabled
 
 
 def enable_schedule(schedule_id):
+    logger.debug('Enabling schedule {schedule_id}'.format(schedule_id=schedule_id))
     schedule = ScheduleData.query.get(schedule_id)
     if schedule is None:
         raise ScheduleNotFoundException('Schedule not found')
@@ -92,6 +99,7 @@ def enable_schedule(schedule_id):
 
 
 def disabe_schedule(schedule_id):
+    logger.debug('Disabling schedule {schedule_id}'.format(schedule_id=schedule_id))
     schedule = ScheduleData.query.get(schedule_id)
     if schedule is None:
         raise ScheduleNotFoundException('Schedule not found')
@@ -100,6 +108,7 @@ def disabe_schedule(schedule_id):
 
 
 def delete_schedule(schedule_id):
+    logger.debug('Deleting schedule {schedule_id}'.format(schedule_id=schedule_id))
     schedule = ScheduleData.query.get(schedule_id)
     if schedule is None:
         raise ScheduleNotFoundException('Schedule not found')

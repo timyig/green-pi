@@ -41,7 +41,8 @@ services:
     environment:
       GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
       FLASK_APP: wsgi:app
-    command: sh run_api.sh
+      LOGLEVEL: INFO
+    command: sh run_api.sh  
     ports:
       - 8000:8000
   green-pi:
@@ -55,6 +56,7 @@ services:
     environment:
       GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
       FLASK_APP: green_pi
+      LOGLEVEL: INFO
     command: flask run-scheduler
     privileged: true
     devices:

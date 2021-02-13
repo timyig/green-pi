@@ -9,6 +9,7 @@ import schedule
 import time
 from datetime import datetime
 from time import strftime
+from gpiozero import LED
 import random
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.DEBUG)
@@ -31,13 +32,23 @@ try:
 except BaseException:
     logging.error('Was not able to import Adafruit_DHT')
 
-relay_script_path = os.environ.get("/pyt-8-Way-Relay-Board/k8_box.py")
+RELAY1 = LED(21)
+RELAY2 = LED(20)
+RELAY3 = LED(16)
+RELAY4 = LED(12)
+RELAY1.ON()
+RELAY2.ON()
+RELAY3.ON()
+RELAY4.ON()
 
 OFF = 0
 ON = 1
 TEMP_SENSOR_GPIO = 2
 # Temperature defines
-HEATER_DEVICE_ID = 1
+LIGHT_RELAY = 1
+FAN_RELAY = 2
+HEATER_RELAY = 3
+
 NIGHT_TEMP = 17
 DAY_TEMP = 22
 heater_state = OFF
@@ -53,6 +64,31 @@ def job():
 '''
 
 
+def setRelay(device, state):
+    global RELAY1
+    global RELAY2
+    global RELAY3
+    global RELAY4
+    global OFF
+    global ON
+
+    logging.debug('setRelay {device} and Endtime {state}'.format(
+                  device=device, state=state))
+    if device == 1:
+        relay = RELAY1
+    elif device == 2:
+        relay = RELAY2
+    elif device == 3:
+        relay = RELAY3
+    elif device == 4:
+        relay = RELAY4
+
+    if state == OFF:
+        relay.ON()
+    elif state == ON:
+        relay.OFF()
+
+
 def tempControlService():
     global dmt_data
     global heater_state
@@ -62,16 +98,14 @@ def tempControlService():
     if dmt_data['temperature'] < NIGHT_TEMP - 1.5:
         if heater_state == OFF:
             logging.debug('Activating heating')
-            os.system('python pyt-8-Way-Relay-Board/k8_box.py set-relay -r {relay} -s {state}'.
-                    format(relay=HEATER_DEVICE_ID, state=ON))
+            setRelay(HEATER_RELAY, state=ON)
             heater_state = ON
         else:
             logging.debug('Heater running')
     elif dmt_data['temperature'] > NIGHT_TEMP + 1.5:
         if heater_state == ON:
             logging.debug('Deactivating heating')
-            os.system('python pyt-8-Way-Relay-Board/k8_box.py set-relay -r {relay} -s {state}'.
-                    format(relay=HEATER_DEVICE_ID, state=OFF))
+            setRelay(HEATER_RELAY, state=OFF)
             heater_state = OFF
         else:
             logging.debug('Heater is off')
@@ -160,8 +194,7 @@ def scheduleJob():
             logging.debug("Setting relay state to OFF for: %d", e.device_id)
             state = OFF
         if state != e.last_state:
-            os.system('python pyt-8-Way-Relay-Board/k8_box.py set-relay -r {relay} -s {state}'.format(
-                relay=e.device_id, state=state))
+            setRelay(e.device, state)
             logging.debug("Setting relay %d to %d", e.device_id, state)
             update_schedule(e.id, device_id=e.device_id, last_state=state)
 

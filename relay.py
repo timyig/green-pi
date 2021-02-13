@@ -14,10 +14,10 @@ RELAY2 = LED(20)
 RELAY3 = LED(16)
 RELAY4 = LED(12)
 # Inverted logic On means Off
-RELAY1.ON()
-RELAY2.ON()
-RELAY3.ON()
-RELAY4.ON()
+RELAY1.on()
+RELAY2.on()
+RELAY3.on()
+RELAY4.on()
 
 
 def set_relay(device_id, state):
@@ -33,9 +33,9 @@ def set_relay(device_id, state):
             relay = RELAY4
 
         if state == OFF:
-            relay.ON()
+            relay.on()
         elif state == ON:
-            relay.OFF()
+            relay.off()
     except BaseException:
         logger.error('Error setting relay:', exc_info=True)
     logger.debug("Setting relay %d to %d", device_id, state)

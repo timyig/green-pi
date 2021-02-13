@@ -7,8 +7,7 @@ WORKDIR /usr/src/app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install Adafruit_DHT==1.4.0 --install-option="--force-pi2" && \
-    pip install RPi.GPIO && \
-    pip install -r requirements.txt
+    pip install RPi.GPIO
 
 RUN wget https://nodejs.org/dist/v10.16.1/node-v10.16.1-linux-armv7l.tar.xz && \
     tar -xJf node-v10.16.1-linux-armv7l.tar.xz && \

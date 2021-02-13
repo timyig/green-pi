@@ -15,7 +15,6 @@ services:
       - grafana_data:/var/lib/grafana
     depends_on:
       - db
-
   green-pi-frontend:
     image: tigit/green-pi:master
     working_dir: /usr/src/app/green-pi-frontend
@@ -26,7 +25,7 @@ services:
     environment:
       REACT_APP_GREEN_PI_BACKEND_HOST: http://greenpi:8000
       # REACT_APP_GREEN_PI_BACKEND_HOST: http://localhost:8000
-    command: ionic serve
+    command: serve -s -l 8100 build
     volumes:
       - frontend_build:/usr/src/app/green-pi-frontend/build
     ports:
@@ -41,7 +40,9 @@ services:
       - db
     environment:
       GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
-    command: gunicorn api:app -b 0.0.0.0 --access-logfile=/dev/stdout --error-logfile=/dev/stdout
+      FLASK_APP: wsgi:app
+      LOGLEVEL: INFO
+    command: sh run_api.sh  
     ports:
       - 8000:8000
   green-pi:
@@ -54,6 +55,9 @@ services:
     #   - .:/usr/src/app
     environment:
       GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
+      FLASK_APP: green_pi
+      LOGLEVEL: INFO
+    command: flask run-scheduler
     privileged: true
     devices:
       - /dev/gpiomem:/dev/gpiomem
@@ -68,7 +72,7 @@ services:
       POSTGRES_DB: "green-pi-db"
     volumes:
       - db_data:/var/lib/postgresql/data
-      - ./db/:/docker-entrypoint-initdb.d/
+      # - ./db/:/docker-entrypoint-initdb.d/
     networks:
       - web
     ports:

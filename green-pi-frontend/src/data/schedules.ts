@@ -5,6 +5,9 @@ export interface Schedule {
   manualSchedule: boolean;
   lastState: number;
   deviceId: number;
+  sensor?: string;
+  sensorMin?: number;
+  sensorMax?: number;
   id: number;
 }
 
@@ -20,12 +23,16 @@ export const getSchedules = () => {
       schd.manualSchedule = schd.manual_schedule;
       schd.lastState = schd.last_state;
       schd.deviceId = schd.device_id;
+      schd.sensorMin = schd.sensor_min;
+      schd.sensorMax = schd.sensor_max;
       delete schd.start_schedule;
       delete schd.end_schedule;
       delete schd.enable_schedule;
       delete schd.manual_schedule;
       delete schd.last_state;
       delete schd.device_id;
+      delete schd.sensor_min;
+      delete schd.sensor_max;
       return schd;
     });
     console.log(data);
@@ -46,12 +53,16 @@ export const getSchedule = (id: number) => {
     data.manualSchedule = data.manual_schedule;
     data.lastState = data.last_state;
     data.deviceId = data.device_id;
+    data.sensorMin = data.sensor_min;
+    data.sensorMax = data.sensor_max;
     delete data.start_schedule;
     delete data.end_schedule;
     delete data.enable_schedule;
     delete data.manual_schedule;
     delete data.last_state;
     delete data.device_id;
+    delete data.sensor_min;
+    delete data.sensor_max;
     return data;
   })
   .catch((error) => {
@@ -107,7 +118,10 @@ export const updateSchedule = (id: number, data: Schedule) => {
       "start_schedule": data.startSchedule,
       "end_schedule": data.endSchedule,
       "enable_schedule": data.enableSchedule,
-      "device_id": data.deviceId
+      "device_id": data.deviceId,
+      "sensor": data.sensor || null,
+      "sensor_min": data.sensor? data.sensorMin : null,
+      "sensor_max": data.sensor? data.sensorMax : null
     }),
     headers: {
       'Accept': 'application/json, text/plain, */*',
@@ -126,7 +140,10 @@ export const createSchedule = (data: Schedule) => {
       "start_schedule": data.startSchedule,
       "end_schedule": data.endSchedule,
       "enable_schedule": data.enableSchedule,
-      "device_id": data.deviceId
+      "device_id": data.deviceId,
+      "sensor": data.sensor || null,
+      "sensor_min": data.sensor? data.sensorMin : null,
+      "sensor_max": data.sensor? data.sensorMax : null
     }),
     headers: {
       'Accept': 'application/json',

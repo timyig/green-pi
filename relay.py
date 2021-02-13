@@ -1,6 +1,6 @@
 import subprocess
 import logging
-
+from gpiozero import LED
 from db import update_schedule
 
 logger = logging.getLogger(__file__)
@@ -9,11 +9,33 @@ logger = logging.getLogger(__file__)
 OFF = 0
 ON = 1
 
+RELAY1 = LED(21)
+RELAY2 = LED(20)
+RELAY3 = LED(16)
+RELAY4 = LED(12)
+# Inverted logic On means Off
+RELAY1.ON()
+RELAY2.ON()
+RELAY3.ON()
+RELAY4.ON()
+
 
 def set_relay(device_id, state):
     try:
-        subprocess.run('python pyt-8-Way-Relay-Board/k8_box.py set-relay -r {relay} -s {state}'.format(
-            relay=device_id, state=state))
+        device = device_id
+        if device == 1:
+            relay = RELAY1
+        elif device == 2:
+            relay = RELAY2
+        elif device == 3:
+            relay = RELAY3
+        elif device == 4:
+            relay = RELAY4
+
+        if state == OFF:
+            relay.ON()
+        elif state == ON:
+            relay.OFF()
     except BaseException:
         logger.error('Error setting relay:', exc_info=True)
     logger.debug("Setting relay %d to %d", device_id, state)

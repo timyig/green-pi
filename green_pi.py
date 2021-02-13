@@ -21,9 +21,6 @@ try:
 except BaseException:
     logger.error('Was not able to import Adafruit_DHT')
 
-relay_script_path = os.environ.get("/pyt-8-Way-Relay-Board/k8_box.py")
-
-
 CLIMATE_GPIO = 2
 
 app = create_app()

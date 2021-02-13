@@ -42,7 +42,7 @@ services:
       GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
       FLASK_APP: wsgi:app
       LOGLEVEL: INFO
-    command: sh run_api.sh  
+    command: sh run_api.sh
     ports:
       - 8000:8000
   green-pi:

@@ -10,7 +10,7 @@ import random
 from gpiozero import LED
 
 from db import add_sensor_data, get_schedules, SensorEnum
-from relay import update_relay, ON, OFF
+from relay import update_relay, init_relay, ON, OFF
 from app import create_app
 
 
@@ -19,19 +19,10 @@ logger = logging.getLogger(__file__)
 
 try:
     import Adafruit_DHT as dht
-except BaseException:
+except (ImportError, ModuleNotFoundError):
     logger.error('Was not able to import Adafruit_DHT')
 
 CLIMATE_GPIO = 2
-RELAY1 = LED(21)
-RELAY2 = LED(20)
-RELAY3 = LED(16)
-RELAY4 = LED(12)
-# Inverted logic On means Off
-RELAY1.on()
-RELAY2.on()
-RELAY3.on()
-RELAY4.on()
 
 app = create_app()
 
@@ -63,7 +54,7 @@ def fetch_sensors():
     }
 
 
-def updateSensorData():
+def update_sensor_data():
     try:
         logger.info("Update DB")
         data = fetch_sensors()
@@ -106,7 +97,7 @@ def get_updated_state(schd):
     return ON if time_state == ON and sensor_state == ON else OFF
 
 
-def scheduleJob():
+def schedule_job():
     try:
         logger.debug("scheduleJob")
         events = get_schedules()
@@ -123,12 +114,13 @@ def scheduleJob():
         logger.error("scheduleJob error: ", exc_info=True)
 
 
-schedule.every(1).minutes.do(updateSensorData)
-schedule.every(1).seconds.do(scheduleJob)
+schedule.every(1).minutes.do(update_sensor_data)
+schedule.every(1).seconds.do(schedule_job)
 
 
 @app.cli.command("run-scheduler")
 def run_scheduler():
+    init_relay()
     while True:
         schedule.run_pending()
         time.sleep(1)

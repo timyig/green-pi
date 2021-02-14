@@ -5,18 +5,24 @@ from db import update_schedule
 
 logger = logging.getLogger(__file__)
 
-
 OFF = 0
 ON = 1
 
+RELAY1 = LED(21)
+RELAY2 = LED(20)
+RELAY3 = LED(16)
+RELAY4 = LED(12)
+
+
+def init_relay():
+    # Inverted logic On means Off
+    RELAY1.on()
+    RELAY2.on()
+    RELAY3.on()
+    RELAY4.on()
+
 
 def set_relay(device_id, state):
-
-    global RELAY1
-    global RELAY2
-    global RELAY3
-    global RELAY4
-
     try:
         device = device_id
         if device == 1:

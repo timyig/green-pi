@@ -1,0 +1,39 @@
+# GREEN-PI DOCKER CONTAINER
+---
+version: '3'
+
+services:
+  green-pi-test:
+    image: tigit/green-pi:master
+    networks:
+      - web
+    links:
+      - db
+    environment:
+      GREEN_PI_TEST_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db-test
+      GPIOZERO_PIN_FACTORY: mock
+      LOGLEVEL: INFO
+    command: pytest tests
+  db:
+    image: arm32v7/postgres:10
+    environment:
+      POSTGRES_PASSWORD: "green-pi"
+      POSTGRES_USER: "green-pi"
+      POSTGRES_DB: "green-pi-db-test"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - web
+    ports:
+      - 5432:5432
+
+networks:
+  web:
+    driver: bridge
+volumes:
+  grafana_data:
+    driver: local
+  db_data:
+    driver: local
+  frontend_build:
+    driver: local

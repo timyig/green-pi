@@ -4,8 +4,8 @@ RUN ln -sf /usr/share/zoneinfo/CET /etc/localtime
 WORKDIR /usr/src/app
 
 # Install Python dependecies
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.dev.txt ./
+RUN pip install --no-cache-dir -r requirements.dev.txt
 
 RUN wget https://nodejs.org/dist/v10.16.1/node-v10.16.1-linux-armv7l.tar.xz && \
     tar -xJf node-v10.16.1-linux-armv7l.tar.xz && \
@@ -14,6 +14,6 @@ RUN wget https://nodejs.org/dist/v10.16.1/node-v10.16.1-linux-armv7l.tar.xz && \
     npm config set unsafe-perm true
 
 COPY . ./
-RUN cd green-pi-frontend/ && npm install && cp .env.pi .env && ionic build
+RUN cd green-pi-frontend/ && npm install
 
 RUN chmod +x run_api.sh

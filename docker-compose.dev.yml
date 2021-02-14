@@ -3,54 +3,57 @@
 version: '3'
 
 services:
-  grafana:
-    image: grafana/grafana-arm32v7-linux
-    ports:
-      - 3000:3000
-    networks:
-      - web
-    links:
-      - db
-    volumes:
-      - grafana_data:/var/lib/grafana
-    depends_on:
-      - db
   green-pi-frontend:
-    image: tigit/green-pi:master
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     working_dir: /usr/src/app/green-pi-frontend
     networks:
       - web
     links:
       - green-pi-api
     environment:
-      REACT_APP_GREEN_PI_BACKEND_HOST: http://greenpi:8000
-    command: serve -s -l 8100 build
+      REACT_APP_GREEN_PI_BACKEND_HOST: http://localhost:8000
+    command: ionic serve
     volumes:
       - frontend_build:/usr/src/app/green-pi-frontend/build
+      - .:/usr/src/app
     ports:
-      - 80:8100
+      - 8100:8100
   green-pi-api:
-    image: tigit/green-pi:master
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     networks:
       - web
+    volumes:
+      - .:/usr/src/app
     links:
       - db
     environment:
       GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
+      GPIOZERO_PIN_FACTORY: mock
       FLASK_APP: wsgi:app
-      LOGLEVEL: INFO
-    command: sh run_api.sh
+      LOGLEVEL: DEBUG
+      FLASK_ENV: development
+    command: flask run -h 0.0.0.0 -p 8000
     ports:
       - 8000:8000
   green-pi:
-    image: tigit/green-pi:master
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     networks:
       - web
     links:
       - db
+    volumes:
+      - .:/usr/src/app
     environment:
       GREEN_PI_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db
+      GPIOZERO_PIN_FACTORY: mock
       FLASK_APP: green_pi
+      FLASK_ENV: development
       LOGLEVEL: INFO
     command: flask run-scheduler
     privileged: true

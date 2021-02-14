@@ -14,6 +14,22 @@ Raspberry Pi - Caretaker for plants
 
 `docker-compose -f docker-compose.yml -d run`
 
+## Running on your PC
+
+`docker-compose -f docker-compose.dev.yml -d run`
+
+Please note that this is using an environment var `GPIOZERO_PIN_FACTORY: mock` to mock the functionality of the RPiGPIO lib to be able to run on a PC
+
+This is also using a different requirements file (`requirements.dev.txt`) to be able install python dependencies successfully, since some of the depencencies are only possible to install on in the Pi.
+
+## Running backend tests (on PC)
+
+`docker-compose -f docker-compose.test.yml -d run`
+
+this tests setup uses a difference database to run the tests (`GREEN_PI_TEST_DB_CONNECTION: postgresql://green-pi:green-pi@db:5432/green-pi-db-test`), once you finish running the tests and you wanna run the app, please bring the test containers down by running:
+
+`docker-compose down`
+
 ## Testing on the Pi without DB feature
 
 You have to set the env MY_ENV to TEST.  

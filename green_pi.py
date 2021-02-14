@@ -7,6 +7,7 @@ import time
 from datetime import datetime
 from time import strftime
 import random
+from gpiozero import LED
 
 from db import add_sensor_data, get_schedules, SensorEnum
 from relay import update_relay, ON, OFF
@@ -22,6 +23,15 @@ except BaseException:
     logger.error('Was not able to import Adafruit_DHT')
 
 CLIMATE_GPIO = 2
+RELAY1 = LED(21)
+RELAY2 = LED(20)
+RELAY3 = LED(16)
+RELAY4 = LED(12)
+# Inverted logic On means Off
+RELAY1.on()
+RELAY2.on()
+RELAY3.on()
+RELAY4.on()
 
 app = create_app()
 

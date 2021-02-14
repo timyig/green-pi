@@ -14,6 +14,7 @@ RUN wget https://nodejs.org/dist/v10.16.1/node-v10.16.1-linux-armv7l.tar.xz && \
     npm config set unsafe-perm true
 
 COPY . ./
-RUN cd green-pi-frontend/ && npm install && cp .env.pi .env && ionic build
+RUN cd green-pi-frontend/ && npm install && cp .env.pi .env
+RUN ionic build
 
 RUN chmod +x run_api.sh

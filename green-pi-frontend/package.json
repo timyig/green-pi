@@ -5,6 +5,7 @@
   "dependencies": {
     "@capacitor/core": "2.4.6",
     "@ionic/react": "^5.5.4",
+    "@ionic/cli": "^6.12.4",
     "@ionic/react-router": "^5.5.4",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",

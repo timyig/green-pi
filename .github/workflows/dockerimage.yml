@@ -37,6 +37,10 @@ jobs:
           echo ::set-output name=docker_platform::${DOCKER_TARGET_PLATFORM}
           echo ::set-output name=docker_image::${DOCKER_IMAGE}
           echo ::set-output name=version::${{ steps.extract_branch.outputs.branch }}
+      - name: Run tests
+        id: test
+        run: |
+          docker-compose -f docker-compose.test.yml up green-pi-test
       - name: Docker Login
         if: success()
         run: |

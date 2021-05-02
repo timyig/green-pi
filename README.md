@@ -57,3 +57,11 @@ You have to set the env MY_ENV to TEST.
 * GPIO21 - Relay 4 - Pump
 * GPIO12 - Relay 1 - Lamp
 * GPIO2 - Temp sensor
+
+#### Raspberry PI conficurat
+
+On boot up the 4 pins for the relays are set to output and driven high.
+This turns the relays off.
+
+This is done by editing the /boot/config.txt file:  
+`gpio=12,16,20,21=op,dh`

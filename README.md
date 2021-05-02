@@ -52,7 +52,8 @@ You have to set the env MY_ENV to TEST.
 
 ### Pin assignment
 
-* GPIO21 - Relay 1
-* GPIO20 - Relay 2
-* GPIO16 - Relay 3
-* GPIO12 - Relay 4
+* GPIO20 - Relay 3 - Heating
+* GPIO16 - Relay 2 - Carbon Filter
+* GPIO21 - Relay 4 - Pump
+* GPIO12 - Relay 1 - Lamp
+* GPIO2 - Temp sensor

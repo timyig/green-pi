@@ -1,9 +1,9 @@
-import subprocess
+#import subprocess
 import logging
 from gpiozero import LED
-from db import update_schedule
+#from db import update_schedule
 
-logger = logging.getLogger(__file__)
+#logger = logging.getLogger(__file__)
 
 OFF = 0
 ON = 1

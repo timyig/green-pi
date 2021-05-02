@@ -1,35 +1,35 @@
 #!/usr/bin/env python3
 
-import os
+# import os
 import logging
 import schedule
 import time
-from datetime import datetime
+import datetime
 from time import strftime
 import random
 
-from db import add_sensor_data, get_schedules, SensorEnum
+# TODO Add rolling average https://stackoverflow.com/questions/13728392/moving-average-or-running-mean
+# from db import add_sensor_data, get_schedules, SensorEnum
 from relay import update_relay, init_relay, ON, OFF
-#from app import create_app
+# from app import create_app
 
 
-#logger = logging.getLogger(__file__)
+# logger = logging.getLogger(__file__)
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.DEBUG)
 logger = logging.getLogger("green-pi")
 
 
 try:
     import Adafruit_DHT as dht
-    logger.error('Adafruit DHT imported')
-    print('Adafruit DHT imported')
+    logger.info('Adafruit DHT imported')
 except (ImportError, ModuleNotFoundError):
     logger.error('Was not able to import Adafruit_DHT')
 
 CLIMATE_GPIO = 2
 NO_SENSOR_DATA = 404
-HEATING_ON_EVENT = datetime.now()
-#HEATING_ON_EVENT = datetime.time(20, 0, 0)
-#HEATING_OFF_EVENT = 
+LIGHT_ON_EVENT = datetime.time(20, 32, 0)
+logger.debug('Heating starts at : ', LIGHT_ON_EVENT.hour)
+LIGHT_OFF_EVENT = datetime.time(10, 0, 0)
 
 sensor_data = {
     "temperature": NO_SENSOR_DATA,
@@ -58,9 +58,9 @@ def fetch_sensors():
     return {
         'timestamp': strftime("%Y-%m-%d %H:%M:%S"),
         'temperature': temperature,
-        # 'moister': getGPIOState(MOISTURE_GPIO),
-        'moister': round(random.uniform(1.0, 100.0), 2),
-        'humidity': humidity
+        'humidity': humidity,
+        # No sensor implemented yet
+        'moister': round(random.uniform(50.0, 70.0), 2)
     }
 
 
@@ -68,9 +68,9 @@ def update_sensor_data():
     try:
         logger.debug("Update DB")
         data = fetch_sensors()
-        if data['temperature'] != None:
+        if data['temperature'] is not None:
             sensor_data["temperature"] = data['temperature']
-        if data['humidity'] != None:
+        if data['humidity'] is not None:
             sensor_data["humidity"] = data['humidity']
 
         '''
@@ -80,11 +80,22 @@ def update_sensor_data():
             'moister': data['humidity'],
         })
         '''
-        logger.debug('Last sensors reading: temperature {temperature}, humidity {humidity}'.format(
-            temperature=sensor_data["temperature"], humidity=sensor_data["humidity"]))
-        #print(sensor_data)
+        logger.debug('Last sensors reading: temperature {temperature}, humidity {humidity}'
+                     .format(temperature=sensor_data["temperature"],
+                             humidity=sensor_data["humidity"]))
     except BaseException:
         logger.error("updateSensorData error: ", exc_info=True)
+
+
+def set_light_state():
+    logger.debug('Setting Light State')
+    current_time = datetime.datetime.now().time()
+    time_state = ON
+
+    if current_time > LIGHT_OFF_EVENT and current_time < LIGHT_ON_EVENT:
+        time_state = OFF
+
+    logger.debug('time_state is {time_state}'.format(time_state=time_state))
 
 
 def get_sensor_state(sensor_value, last_state, sensor_min, sensor_max, inverted=False):
@@ -98,6 +109,7 @@ def get_sensor_state(sensor_value, last_state, sensor_min, sensor_max, inverted=
         return last_state
 
 
+'''
 def get_updated_state(schd):
     current_time = datetime.now().time()
     time_state = ON if current_time >= schd.start_schedule and current_time < schd.end_schedule else OFF
@@ -114,8 +126,10 @@ def get_updated_state(schd):
     if schd.sensor == SensorEnum.SensorHumidity and humidity is not None:
         sensor_state = get_sensor_state(humidity, schd.last_state, schd.sensor_min, schd.sensor_max)
     return ON if time_state == ON and sensor_state == ON else OFF
+'''
 
 
+'''
 def updated_relay_state(schd):
     current_time = datetime.now().time()
     time_state = ON if current_time >= schd.start_schedule and current_time < schd.end_schedule else OFF
@@ -132,23 +146,9 @@ def updated_relay_state(schd):
     if schd.sensor == SensorEnum.SensorHumidity and humidity is not None:
         sensor_state = get_sensor_state(humidity, schd.last_state, schd.sensor_min, schd.sensor_max)
     return ON if time_state == ON and sensor_state == ON else OFF
+'''
 
 
-def schedule_job():
-    try:
-        logger.debug("scheduleJob")
-        events = get_schedules()
-        for e in events:
-            logger.debug('Processing event with Start time {start} and Endtime {end}, device_id {device_id}, '
-                'Sensor {sensor}, min {sensor_min}, max {sensor_max}'.format(
-                    start=e.start_schedule, end=e.end_schedule, device_id=e.device_id, 
-                    sensor=e.sensor, sensor_min=e.sensor_min, sensor_max=e.sensor_max))
-            state = get_updated_state(e)
-            logger.debug('State should be {state}'.format(state='ON' if state == ON else 'OFF'))
-            if state != e.last_state:
-                update_relay(e.id, e.device_id, state)
-    except BaseException:
-        logger.error("scheduleJob error: ", exc_info=True)
 '''
 def schedule_job():
     try:
@@ -157,7 +157,26 @@ def schedule_job():
         for e in events:
             logger.debug('Processing event with Start time {start} and Endtime {end}, device_id {device_id}, '
                 'Sensor {sensor}, min {sensor_min}, max {sensor_max}'.format(
-                    start=e.start_schedule, end=e.end_schedule, device_id=e.device_id, 
+                    start=e.start_schedule, end=e.end_schedule, device_id=e.device_id,
+                    sensor=e.sensor, sensor_min=e.sensor_min, sensor_max=e.sensor_max))
+            state = get_updated_state(e)
+            logger.debug('State should be {state}'.format(state='ON' if state == ON else 'OFF'))
+            if state != e.last_state:
+                update_relay(e.id, e.device_id, state)
+    except BaseException:
+        logger.error("scheduleJob error: ", exc_info=True)
+'''
+
+
+'''
+def schedule_job():
+    try:
+        logger.debug("scheduleJob")
+        events = get_schedules()
+        for e in events:
+            logger.debug('Processing event with Start time {start} and Endtime {end}, device_id {device_id}, '
+                'Sensor {sensor}, min {sensor_min}, max {sensor_max}'.format(
+                    start=e.start_schedule, end=e.end_schedule, device_id=e.device_id,
                     sensor=e.sensor, sensor_min=e.sensor_min, sensor_max=e.sensor_max))
             state = get_updated_state(e)
             logger.debug('State should be {state}'.format(state='ON' if state == ON else 'OFF'))
@@ -177,8 +196,9 @@ def run_scheduler():
 
 
 logger.info("Starting green_pi service")
-#schedule.every(1).minutes.do(update_sensor_data)
-schedule.every(10).seconds.do(update_sensor_data)
-#schedule.every(1).seconds.do(schedule_job)
+# schedule.every(1).minutes.do(update_sensor_data)
+schedule.every(30).seconds.do(update_sensor_data)
+schedule.every(10).seconds.do(set_light_state)
+# schedule.every(1).seconds.do(schedule_job)
 
 run_scheduler()
